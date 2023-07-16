@@ -19,12 +19,13 @@ services:
     depends_on:
       - docker-fastapi
     container_name: frontend
-    build:
-      context: ./frontend/
-      args:
-        - REACT_APP_DPR_ENDPOINT=${REACT_APP_DPR_ENDPOINT}
-        - REACT_APP_SUMMARY_ENDPOINT=${REACT_APP_SUMMARY_ENDPOINT}
-      dockerfile: Dockerfile
+    image: jykim310/ps-chosen:latest
+    # build:
+    #   context: ./frontend/
+    #   args:
+    #     - REACT_APP_DPR_ENDPOINT=${REACT_APP_DPR_ENDPOINT}
+    #     - REACT_APP_SUMMARY_ENDPOINT=${REACT_APP_SUMMARY_ENDPOINT}
+    #   dockerfile: Dockerfile
     ports:
       - "80:80"
     restart: always
