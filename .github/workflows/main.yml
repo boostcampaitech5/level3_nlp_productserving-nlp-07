@@ -2,7 +2,7 @@ name: CHOSEN CI/CD
 
 on:
   push:
-    branches: [feat/project-setting]
+    branches: [main]
 
 env:
   FRONTEND_IMAGE: ghcr.io/jlake310/frontend_image
