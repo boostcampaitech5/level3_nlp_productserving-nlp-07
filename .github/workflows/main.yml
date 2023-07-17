@@ -79,7 +79,6 @@ jobs:
           password: ${{ secrets.GH_TOKEN }}
 
       - name: Docker run
-        working-diretory: ./level3_nlp_productserving-nlp-07
         run: |
           docker stop ${{ secrets.FRONT_APP }} && docker rm ${{ secrets.FRONT_APP }} && docker rmi ${{ env.FRONTEND_IMAGE }}:latest
           docker stop ${{ secrets.API_APP }} && docker rm ${{ secrets.API_APP }} && docker rmi ${{ env.BACKEND_IMAGE }}:latest
