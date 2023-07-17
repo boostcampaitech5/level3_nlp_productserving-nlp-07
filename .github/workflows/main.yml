@@ -80,6 +80,6 @@ jobs:
 
       - name: Docker run
         run: |
-          docker stop ${{ secrets.FRONT_APP }} && docker rm ${{ secrets.FRONT_APP }} && docker rmi ${{ env.FRONTEND_IMAGE }}:latest \
-          docker stop ${{ secrets.API_APP }} && docker rm ${{ secrets.API_APP }} && docker rmi ${{ env.BACKEND_IMAGE }}:latest \
+          docker stop ${{ secrets.FRONT_APP }} && docker rm ${{ secrets.FRONT_APP }} && docker rmi ${{ env.FRONTEND_IMAGE }}:latest
+          docker stop ${{ secrets.API_APP }} && docker rm ${{ secrets.API_APP }} && docker rmi ${{ env.BACKEND_IMAGE }}:latest
           docker-compose -f docker-compose.yml up -d
