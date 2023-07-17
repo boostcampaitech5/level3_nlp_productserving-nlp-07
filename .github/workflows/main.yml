@@ -83,4 +83,4 @@ jobs:
           docker stop ${{ secrets.FRONT_APP }} && docker rm ${{ secrets.FRONT_APP }} && docker rmi ${{ env.FRONTEND_IMAGE }}:latest
           docker stop ${{ secrets.API_APP }} && docker rm ${{ secrets.API_APP }} && docker rmi ${{ env.BACKEND_IMAGE }}:latest
           docker pull ${{ env.FRONTEND_IMAGE }}:latest && docker pull ${{ env.BACKEND_IMAGE }}:latest
-          docker-compose -f docker-compose.prod.yml up -d
+          docker-compose -f /home/ubuntu/docker-compose.prod.yml up -d
