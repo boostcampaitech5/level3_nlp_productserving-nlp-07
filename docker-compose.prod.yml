@@ -2,7 +2,7 @@ version: "3.7"
 services:
   docker-fastapi:
     container_name: backend
-    image: jykim310/ps-fastapi:latest
+    image: ghcr.io/jlake310/frontend_image
     restart: always
     networks:
       - chosen-network
@@ -11,7 +11,7 @@ services:
     depends_on:
       - docker-fastapi
     container_name: frontend
-    image: jykim310/ps-chosen:latest
+    image: ghcr.io/jlake310/backend_image
     ports:
       - "80:80"
     restart: always
