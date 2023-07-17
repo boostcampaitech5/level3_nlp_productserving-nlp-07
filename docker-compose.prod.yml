@@ -1,0 +1,23 @@
+version: "3.7"
+services:
+  docker-fastapi:
+    container_name: backend
+    image: jykim310/ps-fastapi:latest
+    restart: always
+    networks:
+      - chosen-network
+
+  nginx:
+    depends_on:
+      - docker-fastapi
+    container_name: frontend
+    image: jykim310/ps-chosen:latest
+    ports:
+      - "80:80"
+    restart: always
+    networks:
+      - chosen-network
+
+networks:
+  chosen-network:
+    driver: bridge
