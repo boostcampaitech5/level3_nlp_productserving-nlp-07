@@ -18,6 +18,7 @@ import pandas as pd
 from fastapi import FastAPI, Response
 from fastapi.responses import JSONResponse
 import numpy as np
+import configparser
 
 
 
@@ -69,19 +70,31 @@ def dict_to_list(reviews):
 
 
 # MySQL 연결 설정
-def create_conn():
-    print(os.getenv("MYSQL_HOST"))
-    print(os.getenv("MYSQL_USER"))
-    print(os.getenv("MYSQL_PASSWORD"))
-    print(os.getenv("MYSQL_DB"))
-    print(os.getenv("MYSQL_CHARSET"))
+# def create_conn():
+#     print(os.getenv("MYSQL_HOST"))
+#     print(os.getenv("MYSQL_USER"))
+#     print(os.getenv("MYSQL_PASSWORD"))
+#     print(os.getenv("MYSQL_DB"))
+#     print(os.getenv("MYSQL_CHARSET"))
 
+#     return pymysql.connect(
+#         host=os.getenv("MYSQL_HOST"),
+#         user=os.getenv("MYSQL_USER"),
+#         password=os.getenv("MYSQL_PASSWORD"),
+#         db=os.getenv("MYSQL_DB"),
+#         charset=os.getenv("MYSQL_CHARSET"),
+#     )
+def create_conn():
+    config = configparser.ConfigParser()
+    config.read("./config-local.ini")  # 환경에 맞는 설정 파일 읽기
+    mysql_config = config["mysql"]
+    # print(mysql_config)
     return pymysql.connect(
-        host=os.getenv("MYSQL_HOST"),
-        user=os.getenv("MYSQL_USER"),
-        password=os.getenv("MYSQL_PASSWORD"),
-        db=os.getenv("MYSQL_DB"),
-        charset=os.getenv("MYSQL_CHARSET"),
+        host=mysql_config["host"],
+        user=mysql_config["user"],
+        password=mysql_config["password"],
+        db=mysql_config["db"],
+        charset=mysql_config["charset"],
     )
 
 
