@@ -7,6 +7,20 @@ from typing import List, Union, Optional, Dict, Any
 import re
 from starlette.middleware.cors import CORSMiddleware
 import os
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+
+from crawler.crawling_products_bs4 import crawling_products
+from crawler.crawling_reviews import CSV
+from db_scripts.csv2db import run_pipeline
+from pathlib import Path
+import pandas as pd
+from fastapi import FastAPI, Response
+from fastapi.responses import JSONResponse
+import numpy as np
+
+
+
 
 app = FastAPI()
 
@@ -107,8 +121,73 @@ def read_reviews(prod_name: str):
     result = cursor.fetchall()
 
     if len(result) == 0:
+        print("No review found for name: ", prod_name)
+        # 크롤링 로직
+        # 직접 넣도 싶다면 다음과 같은 형식으로 넣으면 된다.
+        print(prod_name)
+        search_list = {'음식': [prod_name]}
+
+
+        product_file_name = crawling_products(search_list)
+
+        review_file_name = CSV.save_file(product_file_name, 3)
+
+        version = 'immediately_crawling'
+
+        current_directory = Path(__file__).resolve().parent.parent.parent
+        print(current_directory)
+
+        product_csv_path = current_directory.joinpath("backend", "app", f"{product_file_name}.csv")
+        review_csv_path = current_directory.joinpath("backend", "app", f"{review_file_name}.csv")
+
+        product_csv_file = f"{product_csv_path}"
+        review_csv_file = f"{review_csv_path}"
+
+        run_pipeline(product_csv_file, review_csv_file, version)
+
+        # print csv filenames
+        print(os.path.basename(product_csv_file))
+        print(os.path.basename(review_csv_file))
+
+        product_df = pd.read_csv(product_csv_file)
+        product_df = product_df.replace([np.inf, -np.inf], np.nan)  # replace all inf by NaN
+        product_df = product_df.dropna()  # drop all rows with NaN
+
+        review_df = pd.read_csv(review_csv_file, dtype={"headline": str})
+        review_df = review_df.replace([np.inf, -np.inf], np.nan)  # replace all inf by NaN
+        review_df = review_df.dropna()  # drop all rows with NaN
+
+
+        products = []
+        for index, row in product_df.iterrows():
+            products.append({
+                    "search_name": row[0], # 검색어
+                    "unique_product_id": row[1], # 쿠팡 상품 고유 ID
+                    "top_cnt": row[2], # 쿠팡 랭킹
+                    "prod_name": row[3],
+                    "price": row[4], # 가격
+                    "review_cnt": row[5], # 리뷰 수
+                    "rating": row[6], # 평균 평점
+                    "ad_yn": row[7], # 광고 여부
+                    "URL": row[8], # 상품 URL
+                    "product_img_url" : row[9] # 상품 이미지 URL
+                })
+
+
+
+        reviews = []
+        for index, row in review_df.iterrows():
+            reviews.append({
+                "prod_name" : row[0],
+                "rating": row[2],
+                "title": row[3],
+                "context": row[4],
+                "answer": row[5]
+            })  
+
+
         conn.close()
-        return {"error": f"No product found for name: {prod_name}"}
+        return {"source":"crawl", "products":products, "reviews":reviews}
 
     reviews = []
     for row in result:
@@ -123,7 +202,7 @@ def read_reviews(prod_name: str):
         })
 
     conn.close()
-    return {"reviews": reviews}
+    return {"source":"db", "reviews": reviews}
 
 
 @app.get("/api/reviews/search/prod_name/{prod_name}")
@@ -138,9 +217,76 @@ def read_reviews(prod_name: str):
     cursor.execute("SELECT * FROM reviews_ver31 WHERE prod_name LIKE %s", ('%' + prod_name + '%',))
     result = cursor.fetchall()
 
+
     if len(result) == 0:
+        print("No review found for name: ", prod_name)
+        # 크롤링 로직
+        # 직접 넣도 싶다면 다음과 같은 형식으로 넣으면 된다.
+        print(prod_name)
+        search_list = {'음식': [prod_name]}
+
+
+        product_file_name = crawling_products(search_list)
+
+        review_file_name = CSV.save_file(product_file_name, 3)
+
+        version = 'immediately_crawling'
+
+        current_directory = Path(__file__).resolve().parent.parent.parent
+        print(current_directory)
+
+        product_csv_path = current_directory.joinpath("backend", "app", f"{product_file_name}.csv")
+        review_csv_path = current_directory.joinpath("backend", "app", f"{review_file_name}.csv")
+
+        product_csv_file = f"{product_csv_path}"
+        review_csv_file = f"{review_csv_path}"
+
+        run_pipeline(product_csv_file, review_csv_file, version)
+
+        # print csv filenames
+        print(os.path.basename(product_csv_file))
+        print(os.path.basename(review_csv_file))
+
+        product_df = pd.read_csv(product_csv_file)
+        product_df = product_df.replace([np.inf, -np.inf], np.nan)  # replace all inf by NaN
+        product_df = product_df.dropna()  # drop all rows with NaN
+
+        review_df = pd.read_csv(review_csv_file, dtype={"headline": str})
+        review_df = review_df.replace([np.inf, -np.inf], np.nan)  # replace all inf by NaN
+        review_df = review_df.dropna()  # drop all rows with NaN
+
+
+        products = []
+        for index, row in product_df.iterrows():
+            products.append({
+                    "search_name": row[0], # 검색어
+                    "unique_product_id": row[1], # 쿠팡 상품 고유 ID
+                    "top_cnt": row[2], # 쿠팡 랭킹
+                    "prod_name": row[3],
+                    "price": row[4], # 가격
+                    "review_cnt": row[5], # 리뷰 수
+                    "rating": row[6], # 평균 평점
+                    "ad_yn": row[7], # 광고 여부
+                    "URL": row[8], # 상품 URL
+                    "product_img_url" : row[9] # 상품 이미지 URL
+                })
+
+
+
+        reviews = []
+        for index, row in review_df.iterrows():
+            reviews.append({
+                "prod_name" : row[0],
+                "rating": row[2],
+                "title": row[3],
+                "context": row[4],
+                "answer": row[5]
+            })  
+
+
         conn.close()
-        return {"error": f"No product found for name: {prod_name}"}
+        return {"source":"crawl", "products":products, "reviews":reviews}
+    
 
     reviews = []
     for row in result:
@@ -155,7 +301,7 @@ def read_reviews(prod_name: str):
         })
 
     conn.close()
-    return {"reviews": reviews}
+    return {"source":"db", "reviews": reviews}    
 
 @app.get("/api/reviews/all")
 def read_reviews():
