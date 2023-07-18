@@ -231,7 +231,7 @@ class Coupang:
                 # print(dict_data , '\n')
 
                 # Add delay
-                time.sleep(1)                 
+                # time.sleep(1)                 
 
             return save_data, review_counter
 
