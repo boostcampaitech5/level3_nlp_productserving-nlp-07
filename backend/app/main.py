@@ -18,8 +18,8 @@ import pandas as pd
 from fastapi import FastAPI, Response
 from fastapi.responses import JSONResponse
 import numpy as np
-
-
+from dotenv import load_dotenv
+load_dotenv()  # .env 파일의 내용을 읽어서 환경변수로 설정
 
 
 app = FastAPI()
@@ -399,6 +399,35 @@ def read_reviews():
 
     conn.close()
     return {"reviews": reviews}
+
+
+
+class ProductIds(BaseModel):
+    product_id: List[int]
+
+@app.post("/api/products/url")
+async def get_products(product_ids: ProductIds):
+    conn = create_conn()
+    cursor = conn.cursor()
+    
+    # SQL injection을 피하기 위해 매개변수를 안전하게 전달
+    query = "SELECT product_id, url, product_img_url FROM products_ver31 WHERE product_id in ({})".format(', '.join(['%s'] * len(product_ids.product_id)))
+    cursor.execute(query, tuple(product_ids.product_id))
+    rows = cursor.fetchall()
+
+    result = {}
+    for row in rows:
+        result["prod_id"+str(row[0])] = {  # row[0] is the product_id
+            "url": row[1],  # row[1] is the url
+            "product_img_url": row[2]  # row[2] is the product_img_url
+        }
+    
+    # 데이터베이스 연결 종료
+    cursor.close()
+    conn.close()
+    
+    return result
+
 
 
 if __name__ == "__main__":
