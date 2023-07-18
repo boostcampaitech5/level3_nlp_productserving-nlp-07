@@ -20,6 +20,10 @@ from fastapi.responses import JSONResponse
 import numpy as np
 from dotenv import load_dotenv
 load_dotenv()  # .env 파일의 내용을 읽어서 환경변수로 설정
+import requests
+from typing import Optional
+
+
 
 
 app = FastAPI()
@@ -427,6 +431,36 @@ async def get_products(product_ids: ProductIds):
     conn.close()
     
     return result
+
+
+
+class FeedbackIn(BaseModel):
+    query: str
+    recommendations: str
+    best: Optional[str] = None
+    review: Optional[str] = None
+
+
+class FeedbackOut(BaseModel):
+    code: int
+    data: FeedbackIn
+
+
+
+
+@app.post("/api/feedbacks/", response_model=FeedbackOut)
+async def create_feedback(feedback: FeedbackIn):
+    conn = create_conn()
+    cursor = conn.cursor()
+    cursor.execute("insert into feedback_data(query, recommendations, best, review) values(%s, %s, %s, %s)", 
+                   (feedback.query, feedback.recommendations, feedback.best, feedback.review))
+
+    # 데이터베이스 연결 종료
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return FeedbackOut(code=200, data=FeedbackIn(**feedback.dict(), feedback_id=cursor.lastrowid))
 
 
 
