@@ -1,7 +1,6 @@
 name: CHOSEN CI/CD
 
 on:
-  push:
     branches: [deploy-front-back]
 
 env:
