@@ -419,9 +419,9 @@ async def get_products(product_ids: ProductIds):
     cursor.execute(query, tuple(product_ids.product_id))
     rows = cursor.fetchall()
 
-    result = {}
+    data = {}
     for row in rows:
-        result["prod_id"+str(row[0])] = {  # row[0] is the product_id
+        data["prod_id"+str(row[0])] = {  # row[0] is the product_id
             "url": row[1],  # row[1] is the url
             "product_img_url": row[2]  # row[2] is the product_img_url
         }
@@ -430,6 +430,8 @@ async def get_products(product_ids: ProductIds):
     cursor.close()
     conn.close()
     
+    # code와 data를 포함한 결과 반환
+    result = {"code": 200, "data": data}
     return result
 
 
@@ -448,7 +450,7 @@ class FeedbackOut(BaseModel):
 
 
 
-@app.post("/api/feedbacks/", response_model=FeedbackOut)
+@app.post("/api/feedback/", response_model=FeedbackOut)
 async def create_feedback(feedback: FeedbackIn):
     conn = create_conn()
     cursor = conn.cursor()
