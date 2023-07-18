@@ -79,7 +79,7 @@ const StartPage = () => {
 export default StartPage;
 
 const HeaderText = styled.div`
-  width: 800rem;
+  // width: 800rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -120,6 +120,9 @@ const CenterInnerDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  @media screen and (max-width: 1400px) {
+    flex-direction: column;
+  }
 `;
 
 const LeftDiv = styled.div`
@@ -128,6 +131,11 @@ const LeftDiv = styled.div`
   border-radius: 10rem;
   background: #fff;
   padding: 20rem;
+  @media screen and (max-width: 1400px) {
+    padding: 0rem;
+    height: 130rem;
+    margin-bottom: 20rem;
+  }
 `;
 
 const LeftInnerDiv = styled.div`
@@ -154,6 +162,10 @@ const LeftInnerText = styled.span`
 
 const Arrow = styled.img`
   width: 64rem;
+  @media screen and (max-width: 1400px) {
+    transform: rotate(90deg);
+    width: 48rem;
+  }
 `;
 
 const RightDiv = styled.div`
@@ -163,6 +175,11 @@ const RightDiv = styled.div`
   background: #fff;
   display: flex;
   align-items: center;
+  @media screen and (max-width: 1400px) {
+    width: 600rem;
+    height: 180rem;
+    margin-top: 20rem;
+  }
 `;
 
 const RightInnerDiv = styled.div`
@@ -175,12 +192,19 @@ const RightInnerDiv = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  @media screen and (max-width: 1400px) {
+    height: 180rem;
+  }
 `;
 
 const CheckImg = styled.img`
   width: 80rem;
   margin-top: 85rem;
   margin-bottom: 60rem;
+  @media screen and (max-width: 1400px) {
+    margin-top: 25rem;
+    margin-bottom: 20rem;
+  }
 `;
 
 const RightText = styled.span`
