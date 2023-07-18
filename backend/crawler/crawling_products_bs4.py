@@ -36,6 +36,7 @@ def crawling_products(search_list):
                     
                     top_cnt = f"number no-{cnt}"
                     name = product.select_one('.name').get_text()
+                    name = search_item+" "+name
                     price = product.select_one('.price-value').get_text().replace(',', '')
                     review_cnt = product.select_one('.rating-total-count')
                     review_cnt = review_cnt.get_text().replace('(', '').replace(')', '') if review_cnt else '0'

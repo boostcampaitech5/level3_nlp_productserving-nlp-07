@@ -14,7 +14,7 @@ def check_products_table(cursor, table_name):
             CREATE TABLE IF NOT EXISTS products_{table_name} (
                 `product_id`           int NOT NULL AUTO_INCREMENT COMMENT '제품 ID',
                 `unique_product_id`    varchar(255) COMMENT '제품 고유 ID',
-                `top_cnt`              varchar(10) COMMENT '쿠팡 TOP10 랭킹',
+                `top_cnt`              varchar(255) COMMENT '쿠팡 TOP10 랭킹',
                 `search_name`          varchar(255) COMMENT '검색어',
                 `prod_name`            varchar(255) COMMENT '제품 이름',
                 `description`          text COMMENT '제품에 대한 설명',
@@ -28,6 +28,8 @@ def check_products_table(cursor, table_name):
                 `positive_reviews_cnt` int COMMENT '긍정 리뷰 수',
                 `negative_reviews_cnt` int COMMENT '부정 리뷰 수',
                 `summary`              text COMMENT '제품 요약(모델링)',
+                `product_img_url`      varchar(255) COMMENT '제품 이미지 URL',
+                `data_create_date`     TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '데이터 생성일',                
                 PRIMARY KEY (`product_id`)
             ) COMMENT = '제품 정보 테이블'
         """)
