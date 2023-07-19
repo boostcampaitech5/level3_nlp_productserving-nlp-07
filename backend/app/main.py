@@ -450,6 +450,8 @@ class FeedbackIn(BaseModel):
 class FeedbackOut(FeedbackIn):
     feedback_id: int
 
+class UpdateData(BaseModel):
+    review: str
 
 
 
@@ -479,6 +481,35 @@ async def create_feedback(feedback: FeedbackIn):
         return FeedbackOut(**feedback.dict(), feedback_id=last_row_id)
     except:
         raise HTTPException(status_code=701, detail="feedback insert Error")
+
+
+
+@app.put("/api/feedback/feedback_id/{feedback_id}")
+async def update_feedback(feedback_id: int, update_data: UpdateData):
+    conn = None
+    cursor = None
+    try:
+        conn = create_conn()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE feedback_data SET review = %s WHERE feedback_id = %s",
+                       (update_data.review, feedback_id))
+
+        conn.commit()
+
+    except Exception as e:
+        if conn is not None:
+            conn.rollback()   # rollback to previous state
+        raise HTTPException(status_code=500, detail="Database error")
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
+    try:
+        return {"status": "Feedback Updated Successfully.", "feedback_id": feedback_id}
+    except:
+        raise HTTPException(status_code=801, detail="feedback update Error")
 
 
 
