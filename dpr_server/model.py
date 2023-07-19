@@ -179,6 +179,11 @@ class DenseRetriever:
         return self.run_dpr_split(query, filtered_reviews)
 
     def run_dpr_db_v3(self, query: str, reviews: List[Dict]) -> str:
+        prod_name_dict = defaultdict(str)
+        for review in reviews:
+            if review["prod_id"] not in prod_name_dict:
+                prod_name_dict[int(review["prod_id"])] = review["prod_name"]
+
         prod_ids = [review["prod_id"] for review in reviews]
         contexts = [review["context"] for review in reviews]
         contexts = [re.sub(r"<[^>]+>\s+(?=<)|<[^>]+>", "", text) for text in contexts]
@@ -279,14 +284,17 @@ class DenseRetriever:
         recom_list = [
             {
                 "prod_id": prod_ids[sort_indices[0]],
+                "prod_name": prod_name_dict[int(prod_ids[sort_indices[0]])],
                 "context": filtered_reviews[sort_indices[0]],
             },
             {
                 "prod_id": prod_ids[sort_indices[1]],
+                "prod_name": prod_name_dict[int(prod_ids[sort_indices[1]])],
                 "context": filtered_reviews[sort_indices[1]],
             },
             {
                 "prod_id": prod_ids[sort_indices[2]],
+                "prod_name": prod_name_dict[int(prod_ids[sort_indices[2]])],
                 "context": filtered_reviews[sort_indices[2]],
             },
         ]
