@@ -15,9 +15,13 @@ from crawler.crawling_reviews import CSV
 from db_scripts.csv2db import run_pipeline
 from pathlib import Path
 import pandas as pd
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, Response, HTTPException
 from fastapi.responses import JSONResponse
 import numpy as np
+from dotenv import load_dotenv
+load_dotenv()  # .env 파일의 내용을 읽어서 환경변수로 설정
+import requests
+from typing import Optional
 
 
 
@@ -399,6 +403,115 @@ def read_reviews():
 
     conn.close()
     return {"reviews": reviews}
+
+
+
+class ProductIds(BaseModel):
+    product_id: List[int]
+
+@app.post("/api/products/url")
+async def get_products(product_ids: ProductIds):
+    conn = create_conn()
+    cursor = conn.cursor()
+    
+    # SQL injection을 피하기 위해 매개변수를 안전하게 전달
+    query = "SELECT product_id, url, product_img_url FROM products_ver31 WHERE product_id in ({})".format(', '.join(['%s'] * len(product_ids.product_id)))
+    cursor.execute(query, tuple(product_ids.product_id))
+    rows = cursor.fetchall()
+
+    data = {}
+    for row in rows:
+        data["prod_id"+str(row[0])] = {  # row[0] is the product_id
+            "url": row[1],  # row[1] is the url
+            "product_img_url": row[2]  # row[2] is the product_img_url
+        }
+    
+    # 데이터베이스 연결 종료
+    cursor.close()
+    conn.close()
+    
+    # code와 data를 포함한 결과 반환
+    result = data
+    try:
+        return result
+    except:
+        raise HTTPException(status_code=801, detail="products url Error")
+
+
+
+
+class FeedbackIn(BaseModel):
+    query: str
+    recommendations: str
+    best: Optional[str] = None
+    review: Optional[str] = None
+
+
+class FeedbackOut(FeedbackIn):
+    feedback_id: int
+
+class UpdateData(BaseModel):
+    review: str
+
+
+
+@app.post("/api/feedback/")
+async def create_feedback(feedback: FeedbackIn):
+    conn = None
+    cursor = None
+    try:
+        conn = create_conn()
+        cursor = conn.cursor()
+        cursor.execute("insert into feedback_data(query, recommendations, best, review) values(%s, %s, %s, %s)", 
+                       (feedback.query, feedback.recommendations, feedback.best, feedback.review))
+
+        conn.commit()
+        last_row_id = cursor.lastrowid
+    except Exception as e:
+        if conn is not None:
+            conn.rollback()   # rollback to previous state
+        raise HTTPException(status_code=500, detail="Database error")
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
+    try:
+        return FeedbackOut(**feedback.dict(), feedback_id=last_row_id)
+    except:
+        raise HTTPException(status_code=701, detail="feedback insert Error")
+
+
+
+@app.put("/api/feedback/feedback_id/{feedback_id}")
+async def update_feedback(feedback_id: int, update_data: UpdateData):
+    conn = None
+    cursor = None
+    try:
+        conn = create_conn()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE feedback_data SET review = %s WHERE feedback_id = %s",
+                       (update_data.review, feedback_id))
+
+        conn.commit()
+
+    except Exception as e:
+        if conn is not None:
+            conn.rollback()   # rollback to previous state
+        raise HTTPException(status_code=500, detail="Database error")
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
+    try:
+        return {"feedback_id": feedback_id}
+    except:
+        raise HTTPException(status_code=801, detail="feedback update Error")
+
+
 
 
 if __name__ == "__main__":

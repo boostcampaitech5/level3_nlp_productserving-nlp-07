@@ -76,20 +76,20 @@ def create_conn():
 
 
 
-def insert_product_data(csv_file, conn, cursor, version):
-    with open(csv_file, 'r', encoding='utf-8') as f_products:
-        csvReader = csv.reader(f_products)
-        next(csvReader)  # 헤더 건너뛰기
-        for row in tqdm(csvReader):
-            search_name, unique_product_id, top_cnt, prod_name, price, review_cnt, avg_rating, ad_yn, url, product_img_url = row[0], row[1], row[2], row[3], row[4], \
-                row[5], row[6], row[7], row[8], row[9]
-            sql = f"""
-                    INSERT INTO products_{version}
-                    (search_name, unique_product_id, top_cnt, prod_name, price, review_cnt, avg_rating, ad_yn, url, product_img_url)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    """
-            cursor.execute(sql, (search_name, unique_product_id, top_cnt, prod_name, price, review_cnt, avg_rating, ad_yn, url, product_img_url))
-            conn.commit()
+# def insert_product_data(csv_file, conn, cursor, version):
+#     with open(csv_file, 'r', encoding='utf-8') as f_products:
+#         csvReader = csv.reader(f_products)
+#         next(csvReader)  # 헤더 건너뛰기
+#         for row in tqdm(csvReader):
+#             search_name, unique_product_id, top_cnt, prod_name, price, review_cnt, avg_rating, ad_yn, url, product_img_url = row[0], row[1], row[2], row[3], row[4], \
+#                 row[5], row[6], row[7], row[8], row[9]
+#             sql = f"""
+#                     INSERT INTO products_{version}
+#                     (search_name, unique_product_id, top_cnt, prod_name, price, review_cnt, avg_rating, ad_yn, url, product_img_url)
+#                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+#                     """
+#             cursor.execute(sql, (search_name, unique_product_id, top_cnt, prod_name, price, review_cnt, avg_rating, ad_yn, url, product_img_url))
+#             conn.commit()
 
 
 def insert_review_data(csv_file, conn, cursor, version):
@@ -125,7 +125,7 @@ def run_pipeline(product_csv_file, review_csv_file, version):
     check_products_table(curs, version)
     check_reviews_table(curs, version)
 
-    insert_product_data(product_csv_file, conn, curs, version)
+    # insert_product_data(product_csv_file, conn, curs, version)
     insert_review_data(review_csv_file, conn, curs, version)
 
     # 연결 종료
@@ -134,9 +134,9 @@ def run_pipeline(product_csv_file, review_csv_file, version):
 
 
 if __name__ == "__main__":
-    pass
+    
     product_csv_file = "fasdfasdfasdfasdf"
-    review_csv_file = "review_concatenated_review_list"
+    review_csv_file = "review_concatenated_product_list3"
     version = 'ver31'
     #
     current_directory = Path(__file__).resolve().parent.parent.parent
