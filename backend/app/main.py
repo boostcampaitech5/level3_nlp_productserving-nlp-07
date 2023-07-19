@@ -431,8 +431,12 @@ async def get_products(product_ids: ProductIds):
     conn.close()
     
     # code와 data를 포함한 결과 반환
-    result = {"code": 200, "data": data}
-    return result
+    result = data
+    try:
+        return result
+    except:
+        raise HTTPException(status_code=801, detail="products url Error")
+
 
 
 
@@ -443,14 +447,11 @@ class FeedbackIn(BaseModel):
     review: Optional[str] = None
 
 
-class FeedbackOut(BaseModel):
-    code: int
-    data: FeedbackIn
 
 
 
 
-@app.post("/api/feedback/", response_model=FeedbackOut)
+@app.post("/api/feedback/")
 async def create_feedback(feedback: FeedbackIn):
     try:
         conn = create_conn()
@@ -462,7 +463,7 @@ async def create_feedback(feedback: FeedbackIn):
         conn.commit()
         cursor.close()
         conn.close()
-        
+
     except Exception as e:
         # 데이터베이스 오류 발생 시 처리
         conn.rollback()   # 이전 상태로 롤백
@@ -475,7 +476,7 @@ async def create_feedback(feedback: FeedbackIn):
 
 
     try:
-        return FeedbackOut(code=200, data=FeedbackIn(**feedback.dict(), feedback_id=cursor.lastrowid))
+        return FeedbackIn(**feedback.dict(), feedback_id=cursor.lastrowid)
     except:
         raise HTTPException(status_code=701, detail="feedback insert Error")
 
