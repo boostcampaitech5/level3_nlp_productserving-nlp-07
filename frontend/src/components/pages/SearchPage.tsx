@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled, { css } from "styled-components";
 import * as KF from "@styles/keyframes";
+import { useRecoilState } from "recoil";
+import { userState } from "atoms/userState";
 
 const isMobile = function () {
   const match = window.matchMedia("(pointer:coarse)");
@@ -13,6 +15,8 @@ const SearchPage = () => {
   const [inputs, setInput] = useState("");
   const [stage, setStage] = useState("name");
   const [end, setEnd] = useState(0);
+  const [userProd, setProd] = useState("");
+  const [, setUserInput] = useRecoilState(userState);
 
   const navigate = useNavigate();
   const ButtonHandler = () => {
@@ -20,9 +24,13 @@ const SearchPage = () => {
       if (stage === "name") {
         setInput("");
         setStage("option");
-        localStorage.setItem("itemName", inputs);
+        setProd(inputs);
       } else {
-        localStorage.setItem("itemOption", inputs);
+        const userInput = {
+          production: userProd,
+          query: inputs,
+        };
+        setUserInput(userInput);
         setEnd(1);
         setTimeout(() => navigate("/result"), 1600);
       }
@@ -78,12 +86,12 @@ interface endType {
 const CenterWrapper = styled.div`
   margin: 0 auto;
   margin-top: 230rem;
-  width: 700rem;
   height: 440rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
+  ${isMobile() && "margin-top: 120rem;"}
 `;
 
 const CenterText = styled.span<endType>`
@@ -95,6 +103,7 @@ const CenterText = styled.span<endType>`
   font-weight: 700;
   line-height: normal;
 
+  ${isMobile() && "font-size: 24rem;"}
   ${css`
     animation: ${KF.start} 0.8s 0.2s 1 both;
   `}
@@ -106,9 +115,9 @@ const CenterText = styled.span<endType>`
 `;
 
 const CenterInput = styled.input<endType>`
-  width: 700rem;
   height: 150rem;
   border-radius: 20rem;
+  width: 700rem;
   background: #fff;
   box-shadow: 0rem 0rem 17rem 0rem rgba(0, 0, 0, 0.25);
   border: 0rem;
@@ -124,6 +133,7 @@ const CenterInput = styled.input<endType>`
     outline: none;
   }
 
+  ${isMobile() && "width: 300rem; height: 120rem; font-size: 24rem;"}
   ${css`
     animation: ${KF.start} 0.8s 0.4s 1 both;
   `}
@@ -157,6 +167,7 @@ const NextButton = styled.div<buttonType>`
   align-items: center;
   justify-content: center;
 
+  ${isMobile() && "font-size: 20rem; width: 160rem; height: 60rem;"}
   ${css`
     animation: ${KF.start} 1s 0.8s 1 both;
   `}
