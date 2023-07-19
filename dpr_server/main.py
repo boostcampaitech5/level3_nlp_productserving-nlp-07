@@ -10,6 +10,11 @@ class Item(BaseModel):
     reviews: List[str]
 
 
+class SummaryItem(BaseModel):
+    query: str
+    products: List[dict]
+
+
 class DBItem(BaseModel):
     query: str
     reviews: List[dict]
@@ -36,7 +41,7 @@ def retrieve_concat(item: Item):
     try:
         return {"review": DPR.run_dpr_concat(item.query, item.reviews)}
     except:
-        raise HTTPException(status_code=601, detail="DPR Error")
+        raise HTTPException(status_code=500, detail="DPR Error")
 
 
 @app.post("/dpr/split")
@@ -44,7 +49,7 @@ def retrieve_split(item: Item):
     try:
         return {"review": DPR.run_dpr_split(item.query, item.reviews)}
     except:
-        raise HTTPException(status_code=601, detail="DPR Error")
+        raise HTTPException(status_code=500, detail="DPR Error")
 
 
 @app.post("/dpr/split_db")
@@ -52,12 +57,20 @@ def retrieve_split_db(item: DBItem):
     try:
         return {"review": DPR.run_dpr_db(item.query, item.reviews)}
     except:
-        raise HTTPException(status_code=601, detail="DPR Error")
+        raise HTTPException(status_code=500, detail="DPR Error")
 
 
-@app.post("/dpr/split_db_v3")
-def retrieve_split_db_v3(item: DBItem):
+@app.post("/dpr/split_v3")
+def retrieve_split_v3(item: DBItem):
     try:
         return {"review": DPR.run_dpr_db_v3(item.query, item.reviews)}
     except:
-        raise HTTPException(status_code=601, detail="DPR Error")
+        raise HTTPException(status_code=500, detail="DPR(raw) 에러")
+
+
+@app.post("/dpr/concat_v3")
+def retrieve_concat_v3(item: SummaryItem):
+    try:
+        return {"product": DPR.run_dpr_concat_v3(item.query, item.products)}
+    except:
+        raise HTTPException(status_code=500, detail="DPR(요약) 에러")
