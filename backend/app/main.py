@@ -507,7 +507,7 @@ async def update_feedback(feedback_id: int, update_data: UpdateData):
             conn.close()
 
     try:
-        return {"status": "Feedback Updated Successfully.", "feedback_id": feedback_id}
+        return {"feedback_id": feedback_id}
     except:
         raise HTTPException(status_code=801, detail="feedback update Error")
 
