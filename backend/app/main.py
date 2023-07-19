@@ -15,7 +15,7 @@ from crawler.crawling_reviews import CSV
 from db_scripts.csv2db import run_pipeline
 from pathlib import Path
 import pandas as pd
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, Response, HTTPException
 from fastapi.responses import JSONResponse
 import numpy as np
 from dotenv import load_dotenv
@@ -452,17 +452,32 @@ class FeedbackOut(BaseModel):
 
 @app.post("/api/feedback/", response_model=FeedbackOut)
 async def create_feedback(feedback: FeedbackIn):
-    conn = create_conn()
-    cursor = conn.cursor()
-    cursor.execute("insert into feedback_data(query, recommendations, best, review) values(%s, %s, %s, %s)", 
-                   (feedback.query, feedback.recommendations, feedback.best, feedback.review))
+    try:
+        conn = create_conn()
+        cursor = conn.cursor()
+        cursor.execute("insert into feedback_data(query, recommendations, best, review) values(%s, %s, %s, %s)", 
+                    (feedback.query, feedback.recommendations, feedback.best, feedback.review))
 
-    # 데이터베이스 연결 종료
-    conn.commit()
-    cursor.close()
-    conn.close()
+        # 데이터베이스 연결 종료
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+    except Exception as e:
+        # 데이터베이스 오류 발생 시 처리
+        conn.rollback()   # 이전 상태로 롤백
+        raise HTTPException(status_code=500, detail="Database error")
 
-    return FeedbackOut(code=200, data=FeedbackIn(**feedback.dict(), feedback_id=cursor.lastrowid))
+    finally:
+        # 마지막으로 항상 커서와 연결을 닫아줍니다.
+        cursor.close()
+        conn.close()
+
+
+    try:
+        return FeedbackOut(code=200, data=FeedbackIn(**feedback.dict(), feedback_id=cursor.lastrowid))
+    except:
+        raise HTTPException(status_code=701, detail="feedback insert Error")
 
 
 
