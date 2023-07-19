@@ -32,6 +32,15 @@ def filter_corpus(corpus):
     return corpus
 
 
+from pydantic import BaseModel
+
+
+class Item(BaseModel):
+    prod_id: str
+    prod_name: str
+    context: str
+
+
 class DenseRetriever:
     def __init__(self):
         model_name = "klue/bert-base"
@@ -178,7 +187,7 @@ class DenseRetriever:
 
         return self.run_dpr_split(query, filtered_reviews)
 
-    def run_dpr_db_v3(self, query: str, reviews: List[Dict]) -> str:
+    def run_dpr_db_v3(self, query: str, reviews: List[Dict]) -> List[Item]:
         prod_name_dict = defaultdict(str)
         for review in reviews:
             if review["prod_id"] not in prod_name_dict:
@@ -276,7 +285,7 @@ class DenseRetriever:
             r_emb = self.p_encoder(**r_input)
             sim_scores = torch.matmul(r_emb, torch.transpose(q_emb, 0, 1))
             mean_val = torch.mean(sim_scores)
-            sim_score_list.append(mean_val.tolist())
+            sim_score_list.append(mean_val)
 
         sim_score_list = np.array(sim_score_list)
         sort_indices = np.argsort(sim_score_list)
@@ -300,3 +309,28 @@ class DenseRetriever:
         ]
 
         return recom_list
+
+    def run_dpr_concat_v3(self, query: str, products: List[Dict]) -> List[Item]:
+        products = [product for product in products if product["summary"]]
+        summary_list = [product["summary"] for product in products]
+
+        q_seqs_val = self.tokenizer(
+            [query], padding="max_length", truncation=True, return_tensors="pt"
+        )
+        q_emb = self.q_encoder(**q_seqs_val)
+
+        p_seqs_val = self.tokenizer(
+            summary_list, padding="max_length", truncation=True, return_tensors="pt"
+        )
+
+        p_emb = self.p_encoder(**p_seqs_val)
+        sim_scores = torch.matmul(p_emb, torch.transpose(q_emb, 0, 1))
+        sort_indices = torch.argsort(sim_scores.squeeze())
+
+        return_data = [
+            products[sort_indices[0]],
+            products[sort_indices[1]],
+            products[sort_indices[2]],
+        ]
+
+        return return_data
