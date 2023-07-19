@@ -237,20 +237,24 @@ def read_reviews(prod_name: str):
         conn.close()
         return {"source":"crawl", "reviews":reviews}
 
-    reviews = []
+    products = []
+
+    cursor.execute("SELECT * FROM products_ver31 WHERE prod_name = %s", (prod_name,))
+    
+    result = cursor.fetchall()
+
     for row in result:
-        reviews.append({
-            "prod_id": row[1],
-            "prod_name" : row[2],
-            "rating": row[3],
-            "title": row[4],
-            "context": row[5],
-            "answer": row[6],
-            "review_url": row[7]
+        products.append({
+            "product_id": row[0],
+            "prod_name" : row[4],
+            "price": row[6],
+            "url":row[7],
+            "summary":row[15],
+            "product_img_url":row[17],
         })
 
     conn.close()
-    return {"source":"db", "reviews": reviews}
+    return {"source":"db", "products":products} 
 
 
 @app.get("/api/reviews/search/prod_name/{prod_name}")
@@ -358,20 +362,25 @@ def read_reviews(prod_name: str):
         return {"source":"crawl", "reviews":reviews}
     
 
-    reviews = []
+
+    products = []
+
+    cursor.execute("SELECT * FROM products_ver31 WHERE prod_name LIKE %s", ('%' + prod_name + '%',))
+    result = cursor.fetchall()
+
     for row in result:
-        reviews.append({
-            "prod_id": row[1],
-            "prod_name": row[2],
-            "rating": row[3],
-            "title": row[4],
-            "context": row[5],
-            "answer": row[6],
-            "review_url": row[7]
+        products.append({
+            "product_id": row[0],
+            "prod_name" : row[4],
+            "price": row[6],
+            "url":row[7],
+            "summary":row[15],
+            "product_img_url":row[17],
         })
 
     conn.close()
-    return {"source":"db", "reviews": reviews}    
+    return {"source":"db", "products":products} 
+
 
 @app.get("/api/reviews/all")
 def read_reviews():
