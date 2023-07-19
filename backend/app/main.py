@@ -447,38 +447,39 @@ class FeedbackIn(BaseModel):
     review: Optional[str] = None
 
 
+class FeedbackOut(FeedbackIn):
+    feedback_id: int
 
 
 
 
 @app.post("/api/feedback/")
 async def create_feedback(feedback: FeedbackIn):
+    conn = None
+    cursor = None
     try:
         conn = create_conn()
         cursor = conn.cursor()
         cursor.execute("insert into feedback_data(query, recommendations, best, review) values(%s, %s, %s, %s)", 
-                    (feedback.query, feedback.recommendations, feedback.best, feedback.review))
+                       (feedback.query, feedback.recommendations, feedback.best, feedback.review))
 
-        # 데이터베이스 연결 종료
         conn.commit()
-        cursor.close()
-        conn.close()
-
+        last_row_id = cursor.lastrowid
     except Exception as e:
-        # 데이터베이스 오류 발생 시 처리
-        conn.rollback()   # 이전 상태로 롤백
+        if conn is not None:
+            conn.rollback()   # rollback to previous state
         raise HTTPException(status_code=500, detail="Database error")
-
     finally:
-        # 마지막으로 항상 커서와 연결을 닫아줍니다.
-        cursor.close()
-        conn.close()
-
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
 
     try:
-        return FeedbackIn(**feedback.dict(), feedback_id=cursor.lastrowid)
+        return FeedbackOut(**feedback.dict(), feedback_id=last_row_id)
     except:
         raise HTTPException(status_code=701, detail="feedback insert Error")
+
 
 
 
