@@ -39,8 +39,6 @@ const ResultPage = () => {
   const [retrieve_loaded, setRetrieveLoaded] = useState(false);
   const [summary_loaded, setSummaryLoaded] = useState(false);
   const [prodIDList, setIDList] = useState<number[]>([0, 0, 0]);
-  const [summaryCount, setSummaryCount] = useState(1);
-
   const [isLoaded, setLoaded] = useState(false);
   const [showResult, setResult] = useState(false);
   const [summaryList, setSummaryList] = useState<string[]>(["", "", ""]);
@@ -48,33 +46,7 @@ const ResultPage = () => {
   const [imgLinks, setLinks] = useState<string[]>(["", "", ""]);
   const [prodNames, setProdNames] = useState<string[]>(["", "", ""]);
   const [isTextFeedbackModalOn, setTextFeedbackModal] = useState(false);
-
-  // 개발용 더미 데이터
-  // const [isLoaded, setLoaded] = useState(true);
-  // const [showResult, setResult] = useState(true);
-  // const [prodNames, setProdNames] = useState<string[]>([
-  //   "떡볶이 추억의 국민학교 떡볶이 오리지널 (냉동), 600g, 2개",
-  //   "떡볶이 풀무원 쌀 순쌀 고추장 떡볶이, 480g, 2개",
-  //   "떡볶이 오뚜기 맛있는 국물 떡볶이, 424g, 2개",
-  // ]);
-  // const [summaryList, setSummaryList] = useState<string[]>([
-  //   "<맛> 맛있어요 <양> 30개씩 주문하면 너무 많고 10개씩 주문하면 한 달 먹기 딱 좋아요 <조리> 날 계란을 넣어 주시고 수프를 넣어 주세요 <맛> 면도 부드럽고 국물도 더욱 구수해집니다",
-  //   "<맛> 맛있어요 <양> 30개씩 주문하면 너무 많고 10개씩 주문하면 한 달 먹기 딱 좋아요 <조리> 날 계란을 넣어 주시고 수프를 넣어 주세요 <맛> 면도 부드럽고 국물도 더욱 구수해집니다",
-  //   "<맛> 맛있어요 <양> 30개씩 주문하면 너무 많고 10개씩 주문하면 한 달 먹기 딱 좋아요 <조리> 날 계란을 넣어 주시고 수프를 넣어 주세요 <맛> 면도 부드럽고 국물도 더욱 구수해집니다",
-  // ]);
-  // const [imgURLs, setURLs] = useState<string[]>([
-  //   "https://thumbnail9.coupangcdn.com/thumbnails/remote/230x230ex/image/retail/images/544327073118021-b03a2183-a488-4489-b339-8003413aba29.jpg",
-  //   "https://thumbnail8.coupangcdn.com/thumbnails/remote/230x230ex/image/retail/images/c1dbdf3d-01c9-423e-9b60-62619350367d4627553494027830654.png",
-  //   "https://thumbnail7.coupangcdn.com/thumbnails/remote/230x230ex/image/retail/images/ef21b827-dabe-4592-bdfd-8942cc292de52715430314288738577.png",
-  // ]);
-  // const [imgLinks, setLinks] = useState<string[]>([
-  //   "https://www.coupang.com/vp/products/115734217?itemId=351022598&vendorItemId=3855510397&pickType=COU_PICK&q=%EB%96%A1%EB%B3%B6%EC%9D%B4&itemsCount=36&searchId=b321d5a153ba44fea576741a065a5a01&rank=1",
-  //   "https://www.coupang.com/vp/products/111269049?itemId=19272258486&vendorItemId=86387426969&q=%EB%96%A1%EB%B3%B6%EC%9D%B4&itemsCount=36&searchId=b321d5a153ba44fea576741a065a5a01&rank=9",
-  //   "https://www.coupang.com/vp/products/111244392?itemId=19282503148&vendorItemId=86397459992&q=%EB%96%A1%EB%B3%B6%EC%9D%B4&itemsCount=36&searchId=b321d5a153ba44fea576741a065a5a01&rank=12",
-  // ]);
-  // const [isTextFeedbackModalOn, setTextFeedbackModal] = useState(true);
-  // 개발용 더미 데이터
-
+  const [errorModalOn, setErrorModalOn] = useState(false);
   const [FirstHeart, setFirstHeart] = useState(false);
   const [SecondHeart, setSecondHeart] = useState(false);
   const [ThirdHeart, setThirdHeart] = useState(false);
@@ -92,7 +64,7 @@ const ResultPage = () => {
       await axios({
         method: "get",
         url:
-          "http://localhost:8080/api/reviews/search/prod_name/" +
+          "/api/reviews/search/prod_name/" +
           localStorage.getItem("product") +
           " ",
       })
@@ -112,7 +84,7 @@ const ResultPage = () => {
                 reviews: response.data.reviews,
               },
             })
-              .then((dprResponse) => {
+              .then(async (dprResponse) => {
                 setRetrieveLoaded(true);
                 const dprList: DPRReviewType = dprResponse.data;
                 setIDList([
@@ -126,64 +98,65 @@ const ResultPage = () => {
                   dprList.review[1].prod_name,
                   dprList.review[2].prod_name,
                 ]);
-                const textList = [
-                  dprList.review[0].context,
-                  dprList.review[1].context,
-                  dprList.review[2].context,
-                ];
-                // eslint-disable-next-line array-callback-return
-                textList.map(async (review: string, idx: number) => {
-                  await axios({
-                    method: "post",
-                    url: process.env.REACT_APP_SUMMARY_ENDPOINT + "/summary",
-                    headers: {
-                      Accept: "*/*",
-                      "Content-Type": "application/json",
-                    },
-                    data: [review],
-                  })
-                    .then((summary_response) => {
-                      const curSummaryList = summaryList;
-                      curSummaryList[idx] = summary_response.data.review;
-                      setSummaryList(summaryList);
-                      setSummaryCount(summaryCount + 1);
-                      // setSummaryResult(summaryList);
-                      // setSummaryLoaded(true);
-                      // setTimeout(() => setLoaded(true), 2000);
-                      // setTimeout(() => setResult(true), 6200);
+
+                await axios({
+                  method: "post",
+                  url: process.env.REACT_APP_SUMMARY_ENDPOINT + "/summary_v3",
+                  headers: {
+                    Accept: "*/*",
+                    "Content-Type": "application/json",
+                  },
+                  data: [
+                    dprList.review[0].context,
+                    dprList.review[1].context,
+                    dprList.review[2].context,
+                  ],
+                })
+                  .then(async (summary_response) => {
+                    setSummaryList(summary_response.data);
+                    await axios({
+                      method: "post",
+                      url: "/api/products/url",
+                      headers: {
+                        Accept: "*/*",
+                        "Content-Type": "application/json",
+                      },
+                      data: {
+                        product_id: [
+                          parseInt(dprList.review[0].prod_id),
+                          parseInt(dprList.review[1].prod_id),
+                          parseInt(dprList.review[2].prod_id),
+                        ],
+                      },
                     })
-                    .catch((error) => {
-                      console.log(error);
-                    });
-                });
-
-                // 요약 끝
-                setSummaryLoaded(true);
-                setTimeout(() => setLoaded(true), 2000);
-                setTimeout(() => setResult(true), 6200);
-
-                // axios({
-                //   method: "post",
-                //   url: process.env.REACT_APP_SUMMARY_ENDPOINT + "/summary",
-                //   headers: {
-                //     Accept: "*/*",
-                //     "Content-Type": "application/json",
-                //   },
-                //   data: [textList],
-                // })
-                //   .then((summary_response) => {
-                //     const summaryList = summary_response.data.review;
-                //     setSummaryResult(summaryList);
-                //     setSummaryLoaded(true);
-                //     setTimeout(() => setLoaded(true), 2000);
-                //     setTimeout(() => setResult(true), 6200);
-                //   })
-                //   .catch((error) => {
-                //     console.log("요약 에러");
-                //   });
+                      .then((response) => {
+                        setURLs([
+                          response.data.prod_id1.product_img_url,
+                          response.data.prod_id2.product_img_url,
+                          response.data.prod_id3.product_img_url,
+                        ]);
+                        setLinks([
+                          response.data.prod_id1.url,
+                          response.data.prod_id2.url,
+                          response.data.prod_id3.url,
+                        ]);
+                        setSummaryLoaded(true);
+                        setTimeout(() => setLoaded(true), 2000);
+                        setTimeout(() => setResult(true), 6200);
+                      })
+                      .catch((error) => {
+                        console.log(error);
+                        setErrorModalOn(true);
+                      });
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                    setErrorModalOn(true);
+                  });
               })
               .catch((error) => {
                 console.log(error);
+                setErrorModalOn(true);
               });
           } else {
             // db에서 가져옴
@@ -208,11 +181,13 @@ const ResultPage = () => {
               })
               .catch((error) => {
                 console.log(error);
+                setErrorModalOn(true);
               });
           }
         })
         .catch((error) => {
           console.log(error);
+          setErrorModalOn(true);
         });
     };
     localStorage.getItem("product") && FetchData();
@@ -238,7 +213,7 @@ const ResultPage = () => {
         };
         axios({
           method: "post",
-          url: "http://localhost:8080/api/feedback",
+          url: "/api/feedback",
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
@@ -254,6 +229,7 @@ const ResultPage = () => {
       } else {
         heartPushHandler[idx](true);
         setSelected(true);
+        setTextFeedbackModal(true);
         const curData = {
           query: localStorage.getItem("query"),
           recommendations: JSON.stringify(prodIDList),
@@ -262,7 +238,7 @@ const ResultPage = () => {
         };
         axios({
           method: "post",
-          url: "http://localhost:8080/api/feedback",
+          url: "/api/feedback",
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
@@ -291,9 +267,7 @@ const ResultPage = () => {
     } else {
       await axios({
         method: "put",
-        url:
-          "http://localhost:8080/api/feedback/feedback_id/" +
-          feedbackID!.toString(),
+        url: "/api/feedback/feedback_id/" + feedbackID!.toString(),
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -301,17 +275,36 @@ const ResultPage = () => {
         data: {
           review: inputs,
         },
-      })
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      }).catch((error) => {
+        console.log(error);
+      });
       setTextFeedbackModal(false);
     }
   };
-
+  if (errorModalOn) {
+    return (
+      <>
+        <HeaderLogoBlock />
+        <ErrorModal>
+          <ErrorHeightBox />
+          <DescText>
+            이런 🥲 에러가 발생했어요
+            <br />
+            <br />
+            <DescSmallText>
+              다른 상품 혹은 조건으로 입력해주세요.
+              <br />
+              <br />
+            </DescSmallText>
+            <DescSmallText>
+              만약 에러가 계속 발생한다면, <br />
+              관리자에게 문의해주세요🙏
+            </DescSmallText>
+          </DescText>
+        </ErrorModal>
+      </>
+    );
+  }
   if (!showResult && !isLoaded) {
     return (
       <>
@@ -323,10 +316,7 @@ const ResultPage = () => {
                 ? "리뷰 데이터를 수집하고 있어요"
                 : !retrieve_loaded
                 ? "리뷰 데이터를 분석하고 있어요"
-                : dataSource === "crawl" &&
-                  "리뷰 데이터를 요약하고 있어요\n(" +
-                    summaryCount.toString() +
-                    "/3)"}
+                : dataSource === "crawl" && "리뷰 데이터를 요약하고 있어요"}
             </LodingText>
             <Spinner />
           </LodingDiv>
@@ -744,4 +734,34 @@ const ReviewLightText = styled.span`
 const FeedbackHeightBox = styled.div`
   height: 100rem;
   ${isMobile() && "height: 50rem;"}
+`;
+
+const ErrorModal = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 400rem;
+  height: 400rem;
+  background: white;
+
+  // border: 5rem solid #f4f4f4;
+  border-radius: 20rem;
+  box-shadow: 0rem 0rem 17rem 0rem rgba(0, 0, 0, 0.25);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  ${css`
+    animation: ${KF.opacity_change} 0.8s 0s 1 both;
+  `};
+  ${isMobile() && "width: 300rem; height:300rem;"}
+`;
+
+const ErrorHeightBox = styled.div`
+  height: 30rem;
+  ${isMobile() && "height: 55rem;"}
 `;
