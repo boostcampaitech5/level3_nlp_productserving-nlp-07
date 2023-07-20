@@ -316,7 +316,9 @@ const ResultPage = () => {
                 ? "리뷰 데이터를 수집하고 있어요"
                 : !retrieve_loaded
                 ? "리뷰 데이터를 분석하고 있어요"
-                : dataSource === "crawl" && "리뷰 데이터를 요약하고 있어요"}
+                : dataSource === "crawl"
+                ? "리뷰 데이터를 요약하고 있어요"
+                : "리뷰 데이터를 분석하고 있어요"}
             </LodingText>
             <Spinner />
           </LodingDiv>
@@ -443,6 +445,7 @@ const CenterWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
+  ${isMobile() && "width: 100%;"}
 `;
 
 const CenterText = styled.span`
@@ -516,6 +519,7 @@ const LodingText = styled.span`
   font-style: normal;
   font-weight: 700;
   line-height: normal;
+  ${isMobile() && "font-size: 24rem;"}
 `;
 
 const LodingDiv = styled.div<LoadingType>`
@@ -533,6 +537,7 @@ const LodingDiv = styled.div<LoadingType>`
     css`
       animation: ${KF.end} 0.8s 1s 1 both;
     `}
+    ${isMobile() && "height: 180rem;"}
 `;
 
 const TextDiv = styled.div`
