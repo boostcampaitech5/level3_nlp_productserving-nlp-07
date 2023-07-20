@@ -1,6 +1,7 @@
 name: CHOSEN(FRONT/BACK) CI/CD
 
 on:
+  push:
     branches: [master]
 
 env:
