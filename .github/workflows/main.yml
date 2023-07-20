@@ -2,7 +2,7 @@ name: CHOSEN(FRONT/BACK) CI/CD
 
 on:
   push:
-    branches: [deploy-front-back]
+    branches: [main]
 
 env:
   FRONTEND_IMAGE: ghcr.io/jlake310/frontend_image
