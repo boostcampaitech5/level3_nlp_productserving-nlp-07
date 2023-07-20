@@ -163,11 +163,14 @@ def read_reviews(prod_name: str):
 
         version = 'ver31'
 
-        current_directory = Path(__file__).resolve().parent.parent.parent
+        # current_directory = Path(__file__).resolve().parent.parent.parent
+        current_directory = Path(__file__).resolve().parent.parent
         print(current_directory)
 
-        product_csv_path = current_directory.joinpath("backend", "app", f"{product_file_name}.csv")
-        review_csv_path = current_directory.joinpath("backend", "app", f"{review_file_name}.csv")
+        # product_csv_path = current_directory.joinpath("backend", "app", f"{product_file_name}.csv")
+        # review_csv_path = current_directory.joinpath("backend", "app", f"{review_file_name}.csv")
+        product_csv_path = current_directory.joinpath("app", f"{product_file_name}.csv")
+        review_csv_path = current_directory.joinpath("app", f"{review_file_name}.csv")
 
         product_csv_file = f"{product_csv_path}"
         review_csv_file = f"{review_csv_path}"
@@ -284,11 +287,14 @@ def read_reviews(prod_name: str):
 
         version = 'ver31'
 
-        current_directory = Path(__file__).resolve().parent.parent.parent
+        # current_directory = Path(__file__).resolve().parent.parent.parent
+        current_directory = Path(__file__).resolve().parent.parent
         print(current_directory)
 
-        product_csv_path = current_directory.joinpath("backend", "app", f"{product_file_name}.csv")
-        review_csv_path = current_directory.joinpath("backend", "app", f"{review_file_name}.csv")
+        # product_csv_path = current_directory.joinpath("backend", "app", f"{product_file_name}.csv")
+        # review_csv_path = current_directory.joinpath("backend", "app", f"{review_file_name}.csv")
+        product_csv_path = current_directory.joinpath("app", f"{product_file_name}.csv")
+        review_csv_path = current_directory.joinpath("app", f"{review_file_name}.csv")
 
         product_csv_file = f"{product_csv_path}"
         review_csv_file = f"{review_csv_path}"
@@ -429,8 +435,8 @@ async def get_products(product_ids: ProductIds):
     rows = cursor.fetchall()
 
     data = {}
-    for row in rows:
-        data["prod_id"+str(row[0])] = {  # row[0] is the product_id
+    for idx, row in enumerate(rows):
+        data[f'prod_id{idx+1}'] = {  # row[0] is the product_id
             "url": row[1],  # row[1] is the url
             "product_img_url": row[2]  # row[2] is the product_img_url
         }
