@@ -51,3 +51,21 @@ export const end = keyframes`
   opacity: 0;
 }
 `;
+
+export const opacity_change = keyframes`
+  0%{
+    opacity: 0;
+  }
+  100%{
+    opacity: 1;
+  }
+`;
+
+export const opacity_end = keyframes`
+0%{
+  opacity: 1;
+}
+100%{
+  opacity: 0;
+}
+`;

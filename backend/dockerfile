@@ -1,4 +1,4 @@
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.7
+FROM python:3.9
 
 ARG MYSQL_HOST
 ARG MYSQL_USER
@@ -16,5 +16,6 @@ COPY ./app /app
 WORKDIR /app
 
 RUN pip install -r requirements.txt
+RUN pip install git+https://github.com/jungin500/py-hanspell
 
-ENV PORT=8080
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
