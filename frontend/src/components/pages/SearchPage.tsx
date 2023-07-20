@@ -65,6 +65,11 @@ const SearchPage = () => {
           onChange={ChangeHandler}
           value={inputs}
           onKeyPress={EnterHandler}
+          placeholder={
+            stage === "name"
+              ? "ex. 떡볶이, 삼겹살, 토마토소스"
+              : "ex. 맵고 양 많은 것"
+          }
         />
         <NextButton
           isend={end}
@@ -130,6 +135,8 @@ const CenterInput = styled.input<endType>`
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+  word-break: keep-all;
+
   &:focus {
     outline: none;
   }
