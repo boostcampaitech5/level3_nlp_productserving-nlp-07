@@ -25,11 +25,13 @@ const SearchPage = () => {
         setInput("");
         setStage("option");
         setProd(inputs);
+        localStorage.setItem("product", inputs);
       } else {
         const userInput = {
           production: userProd,
           query: inputs,
         };
+        localStorage.setItem("query", inputs);
         setUserInput(userInput);
         setEnd(1);
         setTimeout(() => navigate("/result"), 1600);
@@ -63,7 +65,6 @@ const SearchPage = () => {
           onChange={ChangeHandler}
           value={inputs}
           onKeyPress={EnterHandler}
-          autoFocus
         />
         <NextButton
           isend={end}
