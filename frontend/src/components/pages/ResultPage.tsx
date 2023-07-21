@@ -300,6 +300,12 @@ const ResultPage = () => {
     return result;
   };
 
+  const RemoveFirstWord = (input: string): string => {
+    const words = input.split(" ");
+    words.shift(); // 첫 번째 단어를 제거
+    return words.join(" ");
+  };
+
   if (errorModalOn) {
     return (
       <>
@@ -370,7 +376,9 @@ const ResultPage = () => {
                     alt=""
                     onClick={() => window.open(product.url)}
                   />
-                  <ProductTitleText>{product.prod_name}</ProductTitleText>
+                  <ProductTitleText>
+                    {RemoveFirstWord(product.prod_name)}
+                  </ProductTitleText>
                   <FeedBackDiv>
                     <HeartImg
                       src={heartPushed[index] ? FillHeart : EmptyHeart}
@@ -398,7 +406,9 @@ const ResultPage = () => {
                     alt=""
                     onClick={() => window.open(imgLinks[idx])}
                   />
-                  <ProductTitleText>{prodNames[idx]}</ProductTitleText>
+                  <ProductTitleText>
+                    {RemoveFirstWord(prodNames[idx])}
+                  </ProductTitleText>
                   <FeedBackDiv>
                     <HeartImg
                       src={heartPushed[idx] ? FillHeart : EmptyHeart}
