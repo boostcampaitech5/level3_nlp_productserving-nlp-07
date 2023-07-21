@@ -7,6 +7,7 @@ import axios from "axios";
 import Spinner from "@blocks/Spinner";
 import EmptyHeart from "@assets/images/empty_heart.png";
 import FillHeart from "@assets/images/fill_heart.png";
+import TextSlider from "@blocks/TextSlider";
 
 const isMobile = function () {
   const match = window.matchMedia("(pointer:coarse)");
@@ -345,6 +346,7 @@ const ResultPage = () => {
                 ? "리뷰 데이터를 요약하고 있어요"
                 : "리뷰 데이터를 분석하고 있어요"}
             </LodingText>
+            <TextSlider />
             <Spinner />
           </LodingDiv>
         </CenterWrapper>
@@ -486,7 +488,7 @@ const CenterWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  ${isMobile() && "width: 100%; height: 150rem;;"}
+  ${isMobile() && "width: 100%; height: 170rem;"}
 `;
 
 const CenterText = styled.span`
