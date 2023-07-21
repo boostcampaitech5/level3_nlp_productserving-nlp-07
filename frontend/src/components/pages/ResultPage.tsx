@@ -195,7 +195,7 @@ const ResultPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const HeartHandler = (idx: number) => {
+  const HeartHandler = async (idx: number) => {
     if (!isProdSelected && !isDescModalOn) {
       if (dataSource === "db") {
         heartPushHandler[idx](true);
@@ -208,10 +208,10 @@ const ResultPage = () => {
             parseInt(summaryResponse![1].product_id),
             parseInt(summaryResponse![2].product_id),
           ]),
-          best: summaryResponse![idx].product_id,
+          best: summaryResponse![idx].product_id.toString(),
           review: null,
         };
-        axios({
+        await axios({
           method: "post",
           url: "/api/feedback",
           headers: {
@@ -236,7 +236,7 @@ const ResultPage = () => {
           best: prodIDList[idx].toString(),
           review: null,
         };
-        axios({
+        await axios({
           method: "post",
           url: "/api/feedback",
           headers: {
