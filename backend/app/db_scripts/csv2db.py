@@ -60,11 +60,6 @@ def check_reviews_table(cursor, table_name):
 
 # MySQL 연결 설정
 def create_conn():
-    print(os.getenv("MYSQL_HOST"))
-    print(os.getenv("MYSQL_USER"))
-    print(os.getenv("MYSQL_PASSWORD"))
-    print(os.getenv("MYSQL_DB"))
-    print(os.getenv("MYSQL_CHARSET"))
 
     return pymysql.connect(
         host=os.getenv("MYSQL_HOST"),
