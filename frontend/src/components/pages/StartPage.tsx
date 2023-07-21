@@ -25,8 +25,8 @@ const StartPage = () => {
             <MobileCenterInnerDiv>
               <MobileLeftInnerDiv>
                 <MobileLeftInnerText>
-                  휴대폰 거치대를 사려고 하는데, 가격대는 3만원 이하에 <br />
-                  휴대폰 무게를 잘 버티는 튼튼한 거치대를 추천해줘.
+                  상품 : 떡볶이 <br />
+                  조건 : 양 많고 맵고 식감이 쫄깃한 것
                 </MobileLeftInnerText>
               </MobileLeftInnerDiv>
               <MobileArrow src={arrow} alt="" />
@@ -56,8 +56,8 @@ const StartPage = () => {
             <LeftDiv>
               <LeftInnerDiv>
                 <LeftInnerText>
-                  휴대폰 거치대를 사려고 하는데, 가격대는 3만원 이하에 <br />
-                  휴대폰 무게를 잘 버티는 튼튼한 거치대를 추천해줘.
+                  상품 : 떡볶이 <br />
+                  조건 : 양 많고 맵고 식감이 쫄깃한 것
                 </LeftInnerText>
               </LeftInnerDiv>
             </LeftDiv>
@@ -156,8 +156,8 @@ const LeftInnerText = styled.span`
   font-style: normal;
   font-weight: 500;
   line-height: 150%;
-  margin-left: 20rem;
-  text-align: left;
+  margin: 0 auto;
+  text-align: center;
 `;
 
 const Arrow = styled.img`
@@ -284,13 +284,15 @@ const MobileLeftInnerDiv = styled.div`
 
 const MobileLeftInnerText = styled.span`
   color: #4a4a4a;
-  font-size: 13rem;
+  font-size: 18rem;
   font-family: Pretendard;
   font-style: normal;
   font-weight: 500;
   line-height: 150%;
   margin-left: 20rem;
-  text-align: left;
+  // text-align: left;
+  margin: 0 auto;
+  text-align: center;
 `;
 
 const MobileArrow = styled.img`
