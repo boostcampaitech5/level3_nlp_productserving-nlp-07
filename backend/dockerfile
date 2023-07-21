@@ -21,3 +21,5 @@ RUN pip install git+https://github.com/jungin500/py-hanspell
 ENV PORT=8080
 ENV TIMEOUT=300
 ENV GRACEFUL_TIMEOUT=300
+ENV MAX_WORKERS=1
+ENV WORKERS_PER_CORE=2
