@@ -13,11 +13,6 @@ env = os.getenv('MY_APP_ENV', 'local')  # 기본값은 'local'
 
 # MySQL 연결 설정
 def create_conn():
-    print(os.getenv("MYSQL_HOST"))
-    print(os.getenv("MYSQL_USER"))
-    print(os.getenv("MYSQL_PASSWORD"))
-    print(os.getenv("MYSQL_DB"))
-    print(os.getenv("MYSQL_CHARSET"))
 
     return pymysql.connect(
         host=os.getenv("MYSQL_HOST"),

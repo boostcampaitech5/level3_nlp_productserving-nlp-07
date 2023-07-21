@@ -47,6 +47,12 @@ def crawling_products(search_list):
                     product_img_url = "https:"+product.select_one('.search-product-wrap-img')['src']
                     print(product_img_url)
 
+
+                    if 'blank' in product_img_url:
+                        print("blank")
+                        print(cnt)
+                        product_img_url = "https:"+product.select_one('.search-product-wrap-img')['data-img-src']
+
                     data.append([search_item, unique_product_id, top_cnt, name, price, review_cnt, rating, ad_yn, url, product_img_url])
                     cnt += 1
                 except Exception as e:
