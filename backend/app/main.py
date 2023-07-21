@@ -74,12 +74,6 @@ def dict_to_list(reviews):
 
 # MySQL 연결 설정
 def create_conn():
-    print(os.getenv("MYSQL_HOST"))
-    print(os.getenv("MYSQL_USER"))
-    print(os.getenv("MYSQL_PASSWORD"))
-    print(os.getenv("MYSQL_DB"))
-    print(os.getenv("MYSQL_CHARSET"))
-
     return pymysql.connect(
         host=os.getenv("MYSQL_HOST"),
         user=os.getenv("MYSQL_USER"),
