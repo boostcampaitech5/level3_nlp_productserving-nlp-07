@@ -281,6 +281,28 @@ const ResultPage = () => {
       setTextFeedbackModal(false);
     }
   };
+
+  const TextToBullet = (input: string): string[] => {
+    const result: string[] = [];
+    let startIndex = input.indexOf("<");
+    let endIndex = input.indexOf(">");
+
+    while (startIndex !== -1 && endIndex !== -1) {
+      const prefix = input.substring(0, startIndex);
+      const suffix = input.substring(endIndex + 1);
+      result.push(prefix.trim());
+      input = suffix;
+      startIndex = input.indexOf("<");
+      endIndex = input.indexOf(">");
+    }
+
+    if (input.trim().length > 0) {
+      result.push(input.trim());
+    }
+
+    return result;
+  };
+
   if (errorModalOn) {
     return (
       <>
@@ -361,7 +383,13 @@ const ResultPage = () => {
                   </FeedBackDiv>
                 </ItemDiv>
                 <TextDiv>
-                  <Description>{product.summary.slice(1, -1)}</Description>
+                  <Description>
+                    {TextToBullet(product.summary.slice(1, -1)).map(
+                      (text) =>
+                        text.length >= 5 &&
+                        text.length <= 40 && <SummaryLine>{text}</SummaryLine>
+                    )}
+                  </Description>
                 </TextDiv>
               </SummaryDiv>
             ))
@@ -383,7 +411,13 @@ const ResultPage = () => {
                   </FeedBackDiv>
                 </ItemDiv>
                 <TextDiv>
-                  <Description>{summaryList[idx]}</Description>
+                  <Description>
+                    {TextToBullet(summaryList[idx]).map(
+                      (text) =>
+                        text.length >= 5 &&
+                        text.length <= 40 && <SummaryLine>{text}</SummaryLine>
+                    )}
+                  </Description>
                 </TextDiv>
               </SummaryDiv>
             ))}
@@ -445,7 +479,7 @@ const CenterWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  ${isMobile() && "width: 100%;"}
+  ${isMobile() && "width: 100%; height: 150rem;;"}
 `;
 
 const CenterText = styled.span`
@@ -460,6 +494,8 @@ const CenterText = styled.span`
   ${css`
     animation: ${KF.startEnd} 4s 0s 1 both;
   `}
+
+  ${isMobile() && "font-size: 24rem;"}
 `;
 
 const CheckImg = styled.img`
@@ -469,6 +505,8 @@ const CheckImg = styled.img`
   margin-top: 110rem;
 
   animation: ${KF.startEnd} 4s 0.2s 1 both;
+
+  ${isMobile() && "width: 80rem; height: 80rem; margin-top: 30rem;"}
 `;
 
 const ItemDiv = styled.div`
@@ -476,7 +514,7 @@ const ItemDiv = styled.div`
   margin-top: 90rem;
   margin-bottom: 50rem;
   width: 417rem;
-  height: 539rem;
+  min-height: 539rem;
   flex-shrink: 0;
   border-radius: 20rem;
   background: #fff;
@@ -490,13 +528,13 @@ const ItemDiv = styled.div`
   ${css`
     animation: ${KF.start2} 0.8s 0.2s 1 both;
   `}
-  ${isMobile() && "width: 300rem; height: 400rem; margin-top: 30rem;"}
+  ${isMobile() && "width: 300rem; min-height: 400rem; margin-top: 30rem;"}
 `;
 
 const Description = styled.span`
   margin: 0 auto;
   color: #4a4a4a;
-  text-align: center;
+  text-align: left;
   font-size: 28rem;
   font-family: Pretendard;
   font-style: normal;
@@ -769,4 +807,12 @@ const ErrorModal = styled.div`
 const ErrorHeightBox = styled.div`
   height: 30rem;
   ${isMobile() && "height: 55rem;"}
+`;
+
+const SummaryLine = styled.li`
+  list-style-position: inside;
+  text-indent: -30rem;
+  margin-left: 40rem;
+  font-size: 24rem;
+  ${isMobile() && "font-size: 18rem; text-indent: -20rem; margin-left:25rem;"}
 `;
