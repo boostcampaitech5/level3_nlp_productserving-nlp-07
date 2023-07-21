@@ -140,7 +140,7 @@ def read_reviews(prod_name: str):
     '''
     conn = create_conn()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM reviews_ver31 WHERE prod_name = %s", (prod_name,))
+    cursor.execute("SELECT * FROM reviews_ver31 WHERE search_name = %s", (prod_name,))
     result = cursor.fetchall()
 
     if len(result) == 0:
@@ -175,7 +175,7 @@ def read_reviews(prod_name: str):
         print(os.path.basename(product_csv_file))
         print(os.path.basename(review_csv_file))
 
-        cursor.execute("SELECT * FROM reviews_ver31 WHERE prod_name = %s", (prod_name,))
+        cursor.execute("SELECT * FROM reviews_ver31 WHERE search_name = %s", (prod_name,))
         result = cursor.fetchall()
         print("result", result)
 
@@ -365,7 +365,7 @@ def read_reviews(prod_name: str):
 
     products = []
 
-    cursor.execute("SELECT * FROM products_ver31 WHERE prod_name LIKE %s", ('%' + prod_name + '%',))
+    cursor.execute("SELECT * FROM products_ver31 WHERE search_name = %s", (prod_name))
     result = cursor.fetchall()
 
     for row in result:
