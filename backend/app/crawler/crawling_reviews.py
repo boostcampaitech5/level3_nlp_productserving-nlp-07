@@ -59,7 +59,7 @@ class Coupang:
         self.MAX_REVIEWS_PER_URL = max_reviews_per_url
 
 
-    def main(self, url_list: List[str], prod_names: List[str], writer: csv.DictWriter) -> None:
+    def main(self, url_list: List[str], prod_names: List[str], search_names: List[str],  writer: csv.DictWriter) -> None:
         # 각 URL의 첫 페이지에서 리뷰를 가져옴
         result = []
         idx = 0
@@ -72,6 +72,7 @@ class Coupang:
             review_counter = 0
 
             prod_name = prod_names[idx]
+            search_name = search_names[idx]
             idx += 1
 
             for page in range(1, 100):
@@ -85,7 +86,7 @@ class Coupang:
                 self.__headers['referer'] = URL
 
                 with rq.Session() as session:
-                    page_data, review_counter = self.fetch(url=url_to_fetch, session=session, review_counter=review_counter, prod_name=prod_name)
+                    page_data, review_counter = self.fetch(url=url_to_fetch, session=session, review_counter=review_counter, prod_name=prod_name, search_name=search_name)
                     # result.append(page_data)
 
                     # review_content spell_check 처리 and write to CSV
@@ -102,7 +103,7 @@ class Coupang:
 
         return result
 
-    def fetch(self,url:str,session, review_counter, prod_name:str)-> List[Dict[str,Union[str,int]]]:
+    def fetch(self,url:str,session, review_counter, prod_name:str, search_name:str)-> List[Dict[str,Union[str,int]]]:
         save_data : List[Dict[str,Union[str,int]]] = list()
 
         with session.get(url=url,headers=self.__headers) as response :
@@ -223,6 +224,7 @@ class Coupang:
                 dict_data['helped_cnt'] = helped_cnt
                 # dict_data['survey'] = survey
                 dict_data['top100_yn'] = top100_yn
+                dict_data['search_name'] = search_name
 
                 review_counter += 1
 
@@ -300,7 +302,7 @@ class CSV:
         # results : List[List[Dict[str,Union[str,int]]]] = Coupang().main(url_list, prod_names)
 
         # 파일에 쓸 데이터 준비
-        csv_columns = ['prod_name', 'user_name', 'rating', 'headline', 'review_content', 'answer', 'helped_cnt', 'top100_yn']
+        csv_columns = ['prod_name', 'user_name', 'rating', 'headline', 'review_content', 'answer', 'helped_cnt', 'top100_yn', 'search_name']
         # 서울 시간
         return_file_name = f'review_{file_name}'
 
@@ -317,7 +319,7 @@ class CSV:
             writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
             writer.writeheader()
             # 크롤링 결과
-            Coupang(max_reviews_per_url).main(url_list, prod_names, writer)        
+            Coupang(max_reviews_per_url).main(url_list, prod_names, search_names, writer)        
 
         print(f'파일 저장완료!\n\n{csv_file}')
 

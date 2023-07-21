@@ -98,8 +98,10 @@ def insert_review_data(csv_file, conn, cursor, version):
         csvReader = csv.reader(f_reviews)
         next(csvReader)  # 헤더 건너뛰기
         for row in tqdm(csvReader):
-            prod_name, user_name, rating, title, context, answer, helped_cnt, top100_yn \
-                = row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]
+
+            prod_name, user_name, rating, title, context, answer, helped_cnt, top100_yn, search_name \
+                = row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]
+
             cursor.execute(f"SELECT product_id FROM products_{version} WHERE prod_name = %s", (prod_name,))
             result = cursor.fetchone()
             if result is None:
@@ -108,10 +110,10 @@ def insert_review_data(csv_file, conn, cursor, version):
             product_id = result[0]
             sql = f"""
                     INSERT INTO reviews_{version}
-                    (prod_id, prod_name, rating, title, context, answer, helped_cnt, top100_yn)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                    (prod_id, prod_name, rating, title, context, answer, helped_cnt, top100_yn, search_name)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                     """
-            cursor.execute(sql, (product_id, prod_name, rating, title, context, answer, helped_cnt, top100_yn))
+            cursor.execute(sql, (product_id, prod_name, rating, title, context, answer, helped_cnt, top100_yn, search_name))
             conn.commit()
 
 
