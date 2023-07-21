@@ -63,10 +63,7 @@ const ResultPage = () => {
     const FetchData = async () => {
       await axios({
         method: "get",
-        url:
-          "/api/reviews/search/prod_name/" +
-          localStorage.getItem("product") +
-          " ",
+        url: "/api/reviews/search/prod_name/" + localStorage.getItem("product"),
       })
         .then((response) => {
           setSource(response.data.source);
