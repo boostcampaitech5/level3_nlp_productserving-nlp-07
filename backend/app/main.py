@@ -263,7 +263,7 @@ def read_reviews(prod_name: str):
     '''
     conn = create_conn()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM reviews_ver31 WHERE prod_name LIKE %s", ('%' + prod_name + '%',))
+    cursor.execute("SELECT * FROM reviews_ver31 WHERE search_name = %s", (prod_name))
     result = cursor.fetchall()
 
 
@@ -302,7 +302,7 @@ def read_reviews(prod_name: str):
 
         conn = create_conn()
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM reviews_ver31 WHERE prod_name LIKE %s", ('%' + prod_name + '%',))
+        cursor.execute("SELECT * FROM reviews_ver31 WHERE search_name = %s", (prod_name))
         result = cursor.fetchall()
         print("result", result)
 
