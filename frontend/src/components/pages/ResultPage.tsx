@@ -307,6 +307,10 @@ const ResultPage = () => {
     return words.join(" ");
   };
 
+  const AddCommasToNumber = (amount: string): string => {
+    return amount.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
   if (errorModalOn) {
     return (
       <>
@@ -381,6 +385,7 @@ const ResultPage = () => {
                   <ProductTitleText>
                     {RemoveFirstWord(product.prod_name)}
                   </ProductTitleText>
+                  <PriceText>{AddCommasToNumber(product.price)}원</PriceText>
                   <FeedBackDiv>
                     <HeartImg
                       src={heartPushed[index] ? FillHeart : EmptyHeart}
@@ -523,8 +528,7 @@ const ItemDiv = styled.div`
   margin-top: 90rem;
   margin-bottom: 50rem;
   width: 417rem;
-  min-height: 539rem;
-  flex-shrink: 0;
+  height: 570rem;
   border-radius: 20rem;
   background: #fff;
   box-shadow: 0rem 0rem 17rem 0rem rgba(0, 0, 0, 0.25);
@@ -537,7 +541,8 @@ const ItemDiv = styled.div`
   ${css`
     animation: ${KF.start2} 0.8s 0.2s 1 both;
   `}
-  ${isMobile() && "width: 300rem; min-height: 400rem; margin-top: 30rem;"}
+  ${isMobile() &&
+  "width: 300rem; min-height: 400rem; margin-top: 30rem; height: 460rem; margin-bottom: 30rem;"}
 `;
 
 const Description = styled.span`
@@ -625,8 +630,9 @@ const ProductImg = styled.img`
   ${isMobile() && "width: 270rem; height: 270rem; margin-top: 20rem;"}
 `;
 
-const ProductTitleText = styled.span`
-  font-size: 26rem;
+const ProductTitleText = styled.div`
+  height: 70rem;
+  font-size: 24rem;
   font-family: Pretendard;
   font-style: normal;
   font-weight: 700;
@@ -634,7 +640,10 @@ const ProductTitleText = styled.span`
   width: 90%;
   margin-top: 30rem;
   word-break: keep-all;
-  ${isMobile() && "font-size: 16rem; margin-top: 20rem;"}
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  ${isMobile() && "font-size: 18rem; margin-top: 20rem;"}
 `;
 
 const FeedBackDiv = styled.div`
@@ -642,7 +651,7 @@ const FeedBackDiv = styled.div`
   display: flex;
   justify-content: flex-end;
   width: 90%;
-  margin-top: 20rem;
+  margin-top: 10rem;
   ${isMobile() && "margin-top: 5rem;"}
 `;
 
@@ -824,4 +833,16 @@ const SummaryLine = styled.li`
   margin-left: 40rem;
   font-size: 24rem;
   ${isMobile() && "font-size: 18rem; text-indent: -20rem; margin-left:25rem;"}
+`;
+
+const PriceText = styled.div`
+  width: 90%;
+  text-align: right;
+  font-size: 24rem;
+  font-family: Pretendard;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  margin-top: 10rem;
+  ${isMobile() && "font-size: 18rem;;"}
 `;
