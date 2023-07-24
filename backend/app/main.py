@@ -521,7 +521,99 @@ async def update_feedback(feedback_id: int, update_data: UpdateData):
         raise HTTPException(status_code=801, detail="feedback update Error")
 
 
+# 크롤링 하는 api
+@app.get("/api/crawl/{prod_name}")
+def read_reviews(prod_name: str):
+    '''
+    제품명으로 리뷰 검색 API (LIKE)
+    :param prod_name:
+    :return:
+    '''
+    conn = create_conn()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM reviews_ver31 WHERE search_name = %s", (prod_name))
+    result = cursor.fetchall()
 
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    if len(result) == 0:
+        print("No review found for name: ", prod_name)
+        # 크롤링 로직
+        # 직접 넣도 싶다면 다음과 같은 형식으로 넣으면 된다.
+        print(prod_name)
+        search_list = {'음식': [prod_name]}
+
+
+        product_file_name = crawling_products(search_list)
+
+        review_file_name = CSV.save_file(product_file_name, 3)
+
+        version = 'ver100'
+
+        # current_directory = Path(__file__).resolve().parent.parent.parent
+        current_directory = Path(__file__).resolve().parent.parent
+        print(current_directory)
+
+        product_csv_path = current_directory.joinpath("app", f"{product_file_name}.csv")
+        review_csv_path = current_directory.joinpath("app", f"{review_file_name}.csv")
+
+        product_csv_file = f"{product_csv_path}"
+        review_csv_file = f"{review_csv_path}"
+
+        run_pipeline(product_csv_file, review_csv_file, version)
+
+        # print csv filenames
+        print(os.path.basename(product_csv_file))
+        print(os.path.basename(review_csv_file))
+        conn.close()
+
+        conn = create_conn()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM reviews_ver100 WHERE search_name = %s", (prod_name))
+        result = cursor.fetchall()
+        print("result", result)
+
+        reviews = []
+
+        for row in result:
+            reviews.append({
+                "prod_id": row[1],
+                "prod_name" : row[2],
+                "rating": row[3],
+                "title": row[4],
+                "context": row[5],
+                "answer": row[6],
+                "review_url": row[7]
+            })
+        
+
+        conn.close()
+        
+        return {"source":"crawl", "reviews":reviews}
+    
+
+
+    products = []
+
+    cursor.execute("SELECT * FROM products_ver100 WHERE search_name = %s", (prod_name))
+    result = cursor.fetchall()
+
+    for row in result:
+        products.append({
+            "product_id": row[0],
+            "prod_name" : row[4],
+            "price": row[6],
+            "url":row[7],
+            "summary":row[15],
+            "product_img_url":row[17],
+        })
+
+    conn.close()
+    return {"source":"db", "products":products} 
+
+
+
+
+
+# uvicorn main:app --port 30008 --host 0.0.0.0
+# if __name__ == "__main__":
+#     uvicorn.run(app, host="0.0.0.0", port=8000)  
