@@ -11,7 +11,7 @@ def crawling_products(search_list):
     for search_category, search_items in search_list.items():
         for search_item in search_items:
             print(search_item)
-            url = os.getenv('REACT_APP_DPR_ENDPOINT')
+            url = os.getenv('CRAWL_ENDPOINT')
             path = url + 'crawling/' + search_item
 
 

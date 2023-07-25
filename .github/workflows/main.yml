@@ -65,6 +65,7 @@ jobs:
             MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
             MYSQL_DB=${{ secrets.MYSQL_DB }}
             MYSQL_CHARSET=${{ secrets.MYSQL_CHARSET }}
+            CRAWL_ENDPOINT=${{ secrets.REACT_APP_DPR_ENDPOINT }}
 
   deploy:
     needs: build
