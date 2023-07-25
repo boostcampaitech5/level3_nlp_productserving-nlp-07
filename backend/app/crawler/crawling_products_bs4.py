@@ -19,7 +19,7 @@ def crawling_products(search_list):
 
             # headers = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36", "Accept-Language": "ko-KR,ko;q=0.8,en-US;q=0.5,en;q=0.3"}
             res = requests.get(path).json()
-            res.raise_for_status()
+            # res.raise_for_status()
 
             soup = BeautifulSoup(res['text'], 'lxml')
                 
