@@ -12,7 +12,7 @@ def crawling_products(search_list):
         for search_item in search_items:
             print(search_item)
             url = os.getenv('CRAWL_ENDPOINT')
-            path = url + 'crawling/' + search_item
+            path = url + '/crawling/' + search_item
 
 
             # url = f"https://www.coupang.com/np/search?q={search_item}&channel=user&component=&eventCategory=SRP&trcid=&traid=&sorter=scoreDesc&minPrice=&maxPrice=&priceRange=&filterType=&listSize=36&filter=&isPriceRange=false&brand=&offerCondition=&rating=0&page=1&rocketAll=false&searchIndexingToken=1=6&backgroundColor="
