@@ -145,3 +145,15 @@ def get_review_summary(reviews: List[str]):
     summary = summary + " " + result
     
     return summary.strip()
+
+
+
+@app.post("/summary_v3")
+def get_review_summary_v3(reviews_list: List[str]):
+    r = []
+
+    for review in reviews_list:
+        summary = get_review_summary([review])
+        r.append(summary.strip())
+    
+    return r
