@@ -9,14 +9,14 @@ import csv
 import logging
 from datetime import datetime, timedelta
 from airflow.utils.dates import days_ago
-import timer
+import time
 
 def connect_to_mysql_and_crawl_data_and_insert_summary():
     # 1. MySQL로부터 데이터를 가져옴
     hook = MySqlHook(mysql_conn_id='salmon_airflow_serving', charset='utf8mb4')
     connection = hook.get_conn()
     cursor = connection.cursor()
-    cursor.execute("SELECT todo_search_product_id, search_name, crawl_yn from todo_search_products where crawl_yn = 'N' limit 10")  # SQL query
+    cursor.execute("SELECT todo_search_product_id, search_name, crawl_yn from todo_search_products where crawl_yn = 'N' limit 1")  # SQL query
     results = cursor.fetchall()
     print(results[0])
 
@@ -33,7 +33,10 @@ def connect_to_mysql_and_crawl_data_and_insert_summary():
 
         headers = {'Content-Type': 'application/json'}
         requests.get("http://49.50.166.224:30008/api/crawl/"+result[1], headers=headers)
-        timer.sleep(10)
+        time.sleep(3)
+
+        cursor.execute("UPDATE todo_search_products SET crawl_yn = 'Y' WHERE todo_search_product_id = %s", (result[0],))
+        connection.commit()
 
     # 커넥션을 닫음
     cursor.close()
@@ -44,7 +47,7 @@ def connect_to_mysql_and_crawl_data_and_insert_summary():
 dag = DAG(
     'crawl_data',
     start_date=days_ago(2),  # DAG 정의 기준 2일 전부터 시작합니다
-    schedule_interval='0 4 * * *',  # This schedule means every 3 minutes
+    schedule_interval='0 5 * * *',  # 새벽 5시 스케쥴
     tags=["crawl_data"],
 )
 
