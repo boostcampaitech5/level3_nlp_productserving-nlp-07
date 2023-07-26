@@ -16,7 +16,7 @@ def connect_to_mysql_and_crawl_data_and_insert_summary():
     hook = MySqlHook(mysql_conn_id='salmon_airflow_serving', charset='utf8mb4')
     connection = hook.get_conn()
     cursor = connection.cursor()
-    cursor.execute("SELECT todo_search_product_id, search_name, crawl_yn from todo_search_products where crawl_yn = 'N' limit 1")  # SQL query
+    cursor.execute("SELECT todo_search_product_id, search_name, crawl_yn from todo_search_products where crawl_yn = 'N' limit 50")  # SQL query
     results = cursor.fetchall()
     print(results[0])
 
