@@ -159,7 +159,7 @@ def read_reviews(prod_name: str):
 
         # current_directory = Path(__file__).resolve().parent.parent.parent
         current_directory = Path(__file__).resolve().parent.parent
-        print(current_directory)
+        # print(current_directory)
 
         # product_csv_path = current_directory.joinpath("backend", "app", f"{product_file_name}.csv")
         # review_csv_path = current_directory.joinpath("backend", "app", f"{review_file_name}.csv")
@@ -172,12 +172,12 @@ def read_reviews(prod_name: str):
         run_pipeline(product_csv_file, review_csv_file, version)
 
         # print csv filenames
-        print(os.path.basename(product_csv_file))
-        print(os.path.basename(review_csv_file))
+        # print(os.path.basename(product_csv_file))
+        # print(os.path.basename(review_csv_file))
 
         cursor.execute("SELECT * FROM reviews_ver31 WHERE search_name = %s", (prod_name,))
         result = cursor.fetchall()
-        print("result", result)
+        # print("result", result)
 
 
         # product_df = pd.read_csv(product_csv_file)
@@ -283,7 +283,7 @@ def read_reviews(prod_name: str):
 
         # current_directory = Path(__file__).resolve().parent.parent.parent
         current_directory = Path(__file__).resolve().parent.parent
-        print(current_directory)
+        # print(current_directory)
 
         # product_csv_path = current_directory.joinpath("backend", "app", f"{product_file_name}.csv")
         # review_csv_path = current_directory.joinpath("backend", "app", f"{review_file_name}.csv")
@@ -296,15 +296,15 @@ def read_reviews(prod_name: str):
         run_pipeline(product_csv_file, review_csv_file, version)
 
         # print csv filenames
-        print(os.path.basename(product_csv_file))
-        print(os.path.basename(review_csv_file))
+        # print(os.path.basename(product_csv_file))
+        # print(os.path.basename(review_csv_file))
         conn.close()
 
         conn = create_conn()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM reviews_ver31 WHERE search_name = %s", (prod_name))
         result = cursor.fetchall()
-        print("result", result)
+        # print("result", result)
 
 
         # product_df = pd.read_csv(product_csv_file)
@@ -531,7 +531,7 @@ def read_reviews(prod_name: str):
     '''
     conn = create_conn()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM reviews_ver31 WHERE search_name = %s", (prod_name))
+    cursor.execute("SELECT * FROM reviews_ver100 WHERE search_name = %s", (prod_name))
     result = cursor.fetchall()
 
 
@@ -551,7 +551,7 @@ def read_reviews(prod_name: str):
 
         # current_directory = Path(__file__).resolve().parent.parent.parent
         current_directory = Path(__file__).resolve().parent.parent
-        print(current_directory)
+        # print(current_directory)
 
         product_csv_path = current_directory.joinpath("app", f"{product_file_name}.csv")
         review_csv_path = current_directory.joinpath("app", f"{review_file_name}.csv")
@@ -562,15 +562,15 @@ def read_reviews(prod_name: str):
         run_pipeline(product_csv_file, review_csv_file, version)
 
         # print csv filenames
-        print(os.path.basename(product_csv_file))
-        print(os.path.basename(review_csv_file))
+        # print(os.path.basename(product_csv_file))
+        # print(os.path.basename(review_csv_file))
         conn.close()
 
         conn = create_conn()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM reviews_ver100 WHERE search_name = %s", (prod_name))
         result = cursor.fetchall()
-        print("result", result)
+        # print("result", result)
 
         reviews = []
 
