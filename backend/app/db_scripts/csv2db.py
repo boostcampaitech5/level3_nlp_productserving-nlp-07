@@ -53,6 +53,7 @@ def check_reviews_table(cursor, table_name):
                 `keywords`        varchar(255) COMMENT '키워드 추출(모델링)',
                 `search_caterory` varchar(255) COMMENT '검색 카테고리',
                 `survey`          text COMMENT '쿠팡 자체 리뷰 설문조사 내용',
+                `search_name`     varchar(255) COMMENT '검색어',
                 PRIMARY KEY (`review_id`)
             ) COMMENT = '리뷰 정보 테이블'
         """)
