@@ -22,6 +22,7 @@ from dotenv import load_dotenv
 load_dotenv()  # .env 파일의 내용을 읽어서 환경변수로 설정
 import requests
 from typing import Optional
+from crawler.crawling_price import extract_price
 
 
 
@@ -612,6 +613,20 @@ def read_reviews(prod_name: str):
 
 
 
+@app.get("/api/price/")
+def read_reviews(url: Optional[str] = None):
+    '''
+    url로 제품 가격 크롤링
+    :param url:
+    :return:
+    
+    '''
+
+    if url is None:
+        return {"detail": "No url provided"}
+
+    price = extract_price(url)
+    return {"price": price}
 
 
 # uvicorn main:app --port 30008 --host 0.0.0.0
