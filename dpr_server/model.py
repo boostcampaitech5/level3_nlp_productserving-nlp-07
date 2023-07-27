@@ -285,7 +285,7 @@ class DenseRetriever:
             r_emb = self.p_encoder(**r_input)
             sim_scores = torch.matmul(r_emb, torch.transpose(q_emb, 0, 1))
             mean_val = torch.mean(sim_scores)
-            sim_score_list.append(mean_val)
+            sim_score_list.append(mean_val.tolist())
 
         sim_score_list = np.array(sim_score_list)
         sort_indices = np.argsort(sim_score_list)
