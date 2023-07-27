@@ -23,7 +23,9 @@ load_dotenv()  # .env 파일의 내용을 읽어서 환경변수로 설정
 import requests
 from typing import Optional
 from crawler.crawling_price import extract_price
-
+from crawler.crawling_reviews_by_url import extract_url_reviews
+from fastapi import FastAPI, Body
+import time
 
 
 
@@ -627,6 +629,140 @@ def read_reviews(url: Optional[str] = None):
 
     price = extract_price(url)
     return {"price": price}
+
+class Item(BaseModel):
+    prod_names: List[str]
+
+
+
+@app.post("/api/crawl/")
+def read_reviews(item: Item):
+     # 각 상품에 대해 시간을 측정하고 저장할 리스트를 준비합니다.
+    elapsed_times = []
+
+    prod_names = item.prod_names
+    
+    # 각 상품에 대해 크롤링을 수행합니다.
+    for prod_name in prod_names:
+        # 시간 측정 시작
+        start_time = time.time()
+
+       
+
+        conn = create_conn()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM reviews_ver100 WHERE search_name = %s", (prod_name))
+        result = cursor.fetchall()
+
+
+        if len(result) == 0:
+            print("No review found for name: ", prod_name)
+            # 크롤링 로직
+            # 직접 넣도 싶다면 다음과 같은 형식으로 넣으면 된다.
+            print(prod_name)
+            search_list = {'음식': [prod_name]}
+
+
+            product_file_name = crawling_products(search_list)
+
+            review_file_name = CSV.save_file(product_file_name, 3)
+
+            version = 'ver100'
+
+            # current_directory = Path(__file__).resolve().parent.parent.parent
+            current_directory = Path(__file__).resolve().parent.parent
+            # print(current_directory)
+
+            product_csv_path = current_directory.joinpath("app", f"{product_file_name}.csv")
+            review_csv_path = current_directory.joinpath("app", f"{review_file_name}.csv")
+
+            product_csv_file = f"{product_csv_path}"
+            review_csv_file = f"{review_csv_path}"
+
+            run_pipeline(product_csv_file, review_csv_file, version)
+
+            # print csv filenames
+            # print(os.path.basename(product_csv_file))
+            # print(os.path.basename(review_csv_file))
+            conn.close()
+
+            conn = create_conn()
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM reviews_ver100 WHERE search_name = %s", (prod_name))
+            result = cursor.fetchall()
+            # print("result", result)
+
+            reviews = []
+
+            for row in result:
+                reviews.append({
+                    "prod_id": row[1],
+                    "prod_name" : row[2],
+                    "rating": row[3],
+                    "title": row[4],
+                    "context": row[5],
+                    "answer": row[6],
+                    "review_url": row[7]
+                })
+            
+
+            conn.close()
+
+            # 시간 측정 종료 및 걸린 시간 계산
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+
+            elapsed_times.append({"product_name": prod_name, "elapsed_time": elapsed_time})
+
+            
+            return {"source":"crawl", "reviews":reviews}
+        
+
+
+        products = []
+
+        cursor.execute("SELECT * FROM products_ver100 WHERE search_name = %s", (prod_name))
+        result = cursor.fetchall()
+
+        for row in result:
+            products.append({
+                "product_id": row[0],
+                "prod_name" : row[4],
+                "price": row[6],
+                "url":row[7],
+                "summary":row[15],
+                "product_img_url":row[17],
+            })
+         # 시간 측정 종료 및 걸린 시간 계산
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        elapsed_times.append({"product_name": prod_name, "elapsed_time": elapsed_time})
+
+    
+
+        conn.close()
+
+    avg_time = sum([time["elapsed_time"] for time in elapsed_times]) / len(elapsed_times)
+    return {"elapsed_times": elapsed_times, "avg_time":avg_time}
+
+   
+
+
+@app.get("/api/review/url")
+def read_reviews(url: Optional[str] = None, prod_name: Optional[str] = None, search_name: Optional[str] = None):
+    '''
+    url로 리뷰 가격 크롤링
+    :param url:
+    :return:
+    
+    '''
+
+    if url is None:
+        return {"detail": "No url provided"}
+
+    data = extract_url_reviews(url, prod_name, search_name)
+    return {"data": data}
+
 
 
 # uvicorn main:app --port 30008 --host 0.0.0.0
