@@ -74,3 +74,19 @@ def retrieve_concat_v3(item: SummaryItem):
         return {"product": DPR.run_dpr_concat_v3(item.query, item.products)}
     except:
         raise HTTPException(status_code=500, detail="DPR(요약) 에러")
+
+
+import requests
+
+
+@app.get("/crawling/{search_item}")
+def crawl(search_item: str):
+    url = f"https://www.coupang.com/np/search?q={search_item}&channel=user&component=&eventCategory=SRP&trcid=&traid=&sorter=scoreDesc&minPrice=&maxPrice=&priceRange=&filterType=&listSize=36&filter=&isPriceRange=false&brand=&offerCondition=&rating=0&page=1&rocketAll=false&searchIndexingToken=1=6&backgroundColor="
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
+        "Accept-Language": "ko-KR,ko;q=0.8,en-US;q=0.5,en;q=0.3",
+    }
+    res = requests.get(url, headers=headers)
+
+    return {"text": res.text}
